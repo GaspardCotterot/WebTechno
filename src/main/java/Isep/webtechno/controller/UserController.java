@@ -4,25 +4,30 @@ import Isep.webtechno.model.entity.Booking;
 import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping(path="/user")
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
 
+    @GetMapping
+    private ResponseEntity<List<User>> getAll() {
+        List<User> allUsers = new ArrayList<>();
+        userRepository.findAll().forEach(allUsers::add);
+        return new ResponseEntity<>(allUsers, new HttpHeaders(), HttpStatus.OK);
+    }
+
     @PostMapping(path="/add")
-    public @ResponseBody
-    String addNewUser (@RequestParam String name
-            , @RequestParam String mail) {
+    public String addNewUser (@RequestParam String name, @RequestParam String mail) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
