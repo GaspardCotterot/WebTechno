@@ -1,6 +1,7 @@
 package Isep.webtechno.controller;
 
 import Isep.webtechno.model.entity.Booking;
+import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,15 @@ public class UserController {
         return new ResponseEntity<>(allUsers, new HttpHeaders(), HttpStatus.OK);
     }
 
+    @GetMapping(path = "/get_by_id/{user_id}")
+    public User getUserById(@PathVariable int user_id){
+
+        if (userRepository.findById(user_id).isPresent()) {
+            return userRepository.findById(user_id).get();
+        }
+        return null;
+    }
+
     @PostMapping(path="/add")
     public String addNewUser (@RequestParam String name, @RequestParam String mail) {
         // @ResponseBody means the returned String is the response, not a view name
@@ -39,13 +49,64 @@ public class UserController {
         return "Saved";
     }
 
-    @PostMapping(path = "/{user-id}/add-booking")
-    String addBookingToUser(@RequestParam User user,@RequestParam Booking booking) {
-        user.getBookings().add(booking);
-        userRepository.save(user);
-        return "Changed";
+    @PostMapping(path="/{user_id}/delete")
+    public String deleteUserById (@PathVariable int user_id) {
+
+        userRepository.deleteById(user_id);
+        return "Done";
     }
 
 
+    @PostMapping(path = "/{user_id}/add-booking")
+    String addBookingToUser(@RequestBody Booking booking, @PathVariable int user_id) {
+
+        User user = getUserById(user_id);
+        if (user != null) {
+            user.getBookings().add(booking);
+            userRepository.save(user);
+            return "Changed";
+        } else {
+            return "Error, no user with this id";
+        }
+    }
+
+    @PostMapping(path = "/{user_id}/add-house")
+    String addHouseToUser(@RequestBody House house, @PathVariable int user_id) {
+
+        User user = getUserById(user_id);
+        if (user != null) {
+            user.getHouses().add(house);
+            userRepository.save(user);
+            return "Changed";
+        } else {
+            return "Error, no user with this id";
+        }
+    }
+
+    @PostMapping(path = "/{user_id}/modify-name")
+    String modifyUserName(@RequestParam String name, @PathVariable int user_id) {
+
+        User user = getUserById(user_id);
+        if (user != null) {
+            user.setName(name);
+            userRepository.save(user);
+            return "Changed";
+        } else {
+            return "Error, no user with this id";
+        }
+    }
+
+    @PostMapping(path = "/{user_id}/modify-mail")
+    String modifyUserMail(@RequestParam String mail, @PathVariable int user_id) {
+
+        User user = getUserById(user_id);
+        if (user != null) {
+            user.setMail(mail);
+            userRepository.save(user);
+            return "Changed";
+        } else {
+            return "Error, no user with this id";
+        }
+    }
 
 }
