@@ -41,11 +41,11 @@ public class UserController {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
-        User n = new User();
+        User user = new User();
 
-        n.setName(name);
-        n.setMail(mail);
-        userRepository.save(n);
+        user.setName(name);
+        user.setMail(mail);
+        userRepository.save(user);
         return "Saved";
     }
 
