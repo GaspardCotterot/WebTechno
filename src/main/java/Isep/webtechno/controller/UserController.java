@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,12 +19,20 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     private ResponseEntity<List<User>> getAll() {
         List<User> allUsers = new ArrayList<>();
         userRepository.findAll().forEach(allUsers::add);
         return new ResponseEntity<>(allUsers, new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @PostMapping("/by-mail")
+    private ResponseEntity<User> getUserByMail(@RequestParam String mail) {
+        User byMail = userRepository.findByMail(mail);
+        return new ResponseEntity<>(byMail, new HttpHeaders(), HttpStatus.OK);
     }
 
     @PostMapping(path="/add")
@@ -35,6 +44,7 @@ public class UserController {
 
         n.setName(name);
         n.setMail(mail);
+        n.setPassword(passwordEncoder.encode("pass"));
         userRepository.save(n);
         return "Saved";
     }
