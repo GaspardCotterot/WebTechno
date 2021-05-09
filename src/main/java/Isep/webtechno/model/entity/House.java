@@ -17,4 +17,6 @@ public class House {
     @JoinColumn
     private User owner;
 
+
+
 }

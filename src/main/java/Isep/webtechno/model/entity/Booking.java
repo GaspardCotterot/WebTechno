@@ -13,13 +13,15 @@ public class Booking {
     @GeneratedValue
     private Integer id;
 
-    private Integer house;
-
     private Integer state;
 
     @ManyToOne
     @JoinColumn
     private User user;
 
+
+    @ManyToOne
+    @JoinColumn
+    private House house;
 
 }

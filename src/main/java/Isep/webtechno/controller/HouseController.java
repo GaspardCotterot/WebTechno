@@ -2,6 +2,7 @@ package Isep.webtechno.controller;
 
 
 import Isep.webtechno.model.entity.House;
+import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.HouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +36,7 @@ public class HouseController {
         return null;
     }
 
+
     @PostMapping(path="/add")
     public String addNewHouse (@RequestParam String title, @RequestParam String description) {
         // @ResponseBody means the returned String is the response, not a view name
@@ -55,5 +57,43 @@ public class HouseController {
         return "Done";
     }
 
+    @PostMapping(path = "/{house_id}/modify-title")
+    String modifyHouseTitle(@RequestParam String title, @PathVariable int house_id) {
+
+        House house = getHouseById(house_id);
+        if (house != null) {
+            house.setTitle(title);
+            houseRepository.save(house);
+            return "Changed";
+        } else {
+            return "Error, no user with this id";
+        }
+    }
+
+    @PostMapping(path = "/{house_id}/modify-description")
+    String modifyHouseDescription(@RequestParam String description, @PathVariable int house_id) {
+
+        House house = getHouseById(house_id);
+        if (house != null) {
+            house.setDescription(description);
+            houseRepository.save(house);
+            return "Changed";
+        } else {
+            return "Error, no user with this id";
+        }
+    }
+
+    @PostMapping(path = "/{house_id}/modify-owner")
+    String modifyHouseOwner(@RequestBody User owner, @PathVariable int house_id) {
+
+        House house = getHouseById(house_id);
+        if (house != null) {
+            house.setOwner(owner);
+            houseRepository.save(house);
+            return "Changed";
+        } else {
+            return "Error, no user with this id";
+        }
+    }
 
 }
