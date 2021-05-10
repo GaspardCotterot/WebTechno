@@ -16,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -44,7 +45,7 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
                                             Authentication authResult) throws IOException, ServletException {
         String token = Jwts.builder()
                 .setSubject(authResult.getName())
-                .signWith(JwtUtils.getKey())
+                .signWith(Keys.hmacShaKeyFor(JwtUtils.secretKey.getBytes(StandardCharsets.UTF_8)))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + (1000 * 60 * 60 * 24 * 2)))//2 days
                 .compact();

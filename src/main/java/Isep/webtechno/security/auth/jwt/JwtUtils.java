@@ -14,35 +14,17 @@ public class JwtUtils {
 
     public static final String headerAuthorization = "Authorization";
     public static final String headerAuthorizationPrefix = "Bearer ";
-    public static final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.ES384;
     public static final String secretKey = "LAMARCHEDESVERTUEUXESTSEMEEDOBSTACLESQUISONTLESENTREPRISESEGOISTESQUEFAITSANSFINSURGIRLOEUVREDUMALINBENISOITILLHOMMEDEBONNEVOLONTEQUIAUNOMDELACHARITESEFAITLEBERGERDESFAIBLESQUILGUIDEDANSLAVALLEEDOMBREDELAMORTETDESLARMESCARILESTLEGARDIENDESONFREREETLAPROVIDENCEDESENFANTSEGARESJABATTRAIALORSLEBRASDUNETERRIBLECOLEREDUNEVENGEANCEFURIEUSEETEFFRAYANTESURLESHORDESIMPIESQUIPOURCHASSENTETREDUISENTANEANTLESBREBISDEDIEUETTUCONNAITRASPOURQUOIMONNOMESTLETERNELQUANDSURTOISABATTRALAVENGEANCEDUTOUTPUISSANT";
-//    public static final String secretKey = "";
 
-
-    public static Key getKey() {
-        return new Key() {
-            @Override
-            public String getAlgorithm() {
-                return signatureAlgorithm.name();
-            }
-
-            @Override
-            public String getFormat() {
-                return null;
-            }
-
-            @Override
-            public byte[] getEncoded() {
-                return secretKey.getBytes(StandardCharsets.UTF_8);
-            }
-        };
-    }
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    //validate token
+
+
+    //trouvé en ligne
+
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

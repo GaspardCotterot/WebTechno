@@ -21,6 +21,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.List;
 
@@ -38,19 +39,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if(request.getHeader(JwtUtils.headerAuthorization) != null && requestTokenHeader.startsWith(JwtUtils.headerAuthorizationPrefix)) {
                 String requestJwt = requestTokenHeader.substring(7);
-//                Claims body = Jwts.parser()
-//                        .setSigningKey(JwtUtils.secretKey)
-//                        .parseClaimsJws(requestJwt)
-//                        .getBody();
-                JwtParser build = Jwts.parserBuilder().setSigningKey(JwtUtils.getKey()).build();
+                JwtParser build = Jwts.parserBuilder().setSigningKey(JwtUtils.secretKey.getBytes(StandardCharsets.UTF_8)).build();
                 Claims body = build.parseClaimsJws(requestJwt).getBody();
-
 
                 String username = body.getSubject();
                 System.out.println("Connected as " + username);
-
-//                User user = userRepository.findByMail(username).orElseThrow();
-
 
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, List.of(new SimpleGrantedAuthority("ROLE_USER")));

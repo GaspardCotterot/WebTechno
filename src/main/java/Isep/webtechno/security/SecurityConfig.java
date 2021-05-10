@@ -42,26 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll() //allow all requests
                 .anyRequest()
                 .authenticated()
-//                .and()
-//                .formLogin()
                 ;
     }
 
-//    @Override
-//    @Bean
-//    protected UserDetailsService userDetailsService() {
-//        UserDetails adminUser = User.builder()
-//                .username("mat")
-//                .password(passwordEncoder.encode("pass"))
-//                .roles("ADMIN")
-//                .build();
-//        UserDetails user = User.builder()
-//                .username("random")
-//                .password(passwordEncoder.encode("pass"))
-//                .roles("USER")
-//                .build();
-//        return new InMemoryUserDetailsManager(adminUser, user);
-//    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
