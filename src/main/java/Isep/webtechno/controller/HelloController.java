@@ -23,4 +23,14 @@ public class HelloController {
     private String admin() {
         return "Welcome admin";
     }
+
+    @GetMapping(path = "/auth")
+    private String connected() {
+        return "You are connected";
+    }
+
+    @PostMapping(path = "/auth")
+    private String connectedPost() {
+        return "You are connected (POST)";
+    }
 }
