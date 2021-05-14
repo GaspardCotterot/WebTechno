@@ -3,6 +3,8 @@ package Isep.webtechno.model.entity;
 import Isep.webtechno.security.Role;
 import com.sun.istack.NotNull;
 import lombok.Data;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,6 +38,15 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "owner")
     private List<House> houses;
 
+
+    //utils
+    public String getBasicInfos() throws JSONException {
+         return (new  JSONObject())
+                 .put("mail", mail)
+                 .put("name", name)
+                 .put("role", role)
+                 .toString();
+    }
 
 
     //UserDetails methods

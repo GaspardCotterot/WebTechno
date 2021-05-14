@@ -4,10 +4,12 @@ import Isep.webtechno.model.entity.Booking;
 import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.UserRepository;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -48,8 +50,17 @@ public class UserController {
         return new ResponseEntity<>(byMail, new HttpHeaders(), HttpStatus.OK);
     }
 
+    @PostMapping("/get-user-info")
+    private ResponseEntity<String> getUserInfoUsingToken() throws JSONException {
+        String mail = SecurityContextHolder.getContext().getAuthentication().getName();
+        User byMail = userRepository.findByMail(mail).orElseThrow(() ->
+                new UsernameNotFoundException(String.format("Mail %s not found", mail))
+        );
+        return new ResponseEntity<>(byMail.getBasicInfos(), new HttpHeaders(), HttpStatus.OK);
+    }
+
     @PostMapping(path="/add")
-    public String addNewUser (@RequestParam String name, @RequestParam String mail) {
+    public String addNewUser (@RequestParam String name, @RequestParam String mail, @RequestParam String password) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
@@ -57,6 +68,7 @@ public class UserController {
 
         user.setName(name);
         user.setMail(mail);
+        user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
         return "Saved";
     }
