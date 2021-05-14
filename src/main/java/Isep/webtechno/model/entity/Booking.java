@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Entity
@@ -20,6 +21,9 @@ public class Booking {
     @ManyToOne
     @JoinColumn
     private User user;
+
+    @OneToMany
+    private List<Message> messages;
 
 
 }
