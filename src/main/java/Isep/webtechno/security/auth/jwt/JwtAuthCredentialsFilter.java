@@ -1,31 +1,33 @@
 package Isep.webtechno.security.auth.jwt;
 
+import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.UserRepository;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.SneakyThrows;
+import org.json.JSONObject;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.naming.AuthenticationException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
 
-    public JwtAuthCredentialsFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthCredentialsFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
     }
 
 
@@ -38,6 +40,7 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
         return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
 
+    @SneakyThrows
     @Override
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
@@ -53,6 +56,24 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
         System.out.println("token generated : " + token);
 
         response.addHeader(JwtUtils.headerAuthorization, JwtUtils.headerAuthorizationPrefix + token);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        JSONObject object = new JSONObject();
+        object.put("token", JwtUtils.headerAuthorizationPrefix + token);
+
+        User user = userRepository.findByMail(authResult.getName()).orElseThrow();
+        object.put("user",
+                (new JSONObject())
+                        .put("mail", user.getMail())
+                        .put("name", user.getName())
+                        .put("role", user.getRole())
+        ); //todo add all user details
+
+
+        PrintWriter writer = response.getWriter();
+        writer.write(object.toString());
+
 
     }
 }
