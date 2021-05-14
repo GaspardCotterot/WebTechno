@@ -1,0 +1,1 @@
+INSERT INTO `user` (`id`, `mail`, `name`, `password`, `role`) VALUES ('1', 'user@user.com', 'Basic User', '$2a$10$x3mHwPZAf.NxkXvHkedx4O4nPrO1W044zEgkJxOL/oV6RrcxGKImi', '0')
