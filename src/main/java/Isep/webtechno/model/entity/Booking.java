@@ -22,7 +22,7 @@ public class Booking {
     @JoinColumn
     private User user;
 
-    @OneToMany
+    @OneToMany(mappedBy = "booking")
     private List<Message> messages;
 
 

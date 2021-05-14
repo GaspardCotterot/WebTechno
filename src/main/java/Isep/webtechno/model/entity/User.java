@@ -1,15 +1,13 @@
 package Isep.webtechno.model.entity;
 
 import Isep.webtechno.security.Role;
+import com.sun.istack.NotNull;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,8 +21,11 @@ public class User implements UserDetails {
 
     private String name;
 
+    @NotNull
+    @Column(unique = true)
     private String mail;
 
+    @NotNull
     private String password;
 
     private Role role = Role.USER;
