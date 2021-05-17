@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +29,9 @@ public class HouseController {
         return new ResponseEntity<>(allHouses, new HttpHeaders(), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/get_by_id/{house_id}")
+    @GetMapping(path = "/{house_id}")
     public House getHouseById(@PathVariable int house_id){
-
-        if (houseRepository.findById(house_id).isPresent()) {
-            return houseRepository.findById(house_id).get();
-        }
-        return null;
+        return houseRepository.findById(house_id).orElseThrow(() -> new EntityNotFoundException("No book with id " + house_id));
     }
 
 

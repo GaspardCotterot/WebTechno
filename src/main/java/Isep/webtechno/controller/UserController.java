@@ -3,6 +3,7 @@ package Isep.webtechno.controller;
 import Isep.webtechno.model.entity.Booking;
 import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.User;
+import Isep.webtechno.model.repo.HouseRepository;
 import Isep.webtechno.model.repo.UserRepository;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/user")
+@RequestMapping(path = "/user")
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private HouseRepository houseRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -33,13 +36,9 @@ public class UserController {
         return new ResponseEntity<>(allUsers, new HttpHeaders(), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/get_by_id/{user_id}")
-    public User getUserById(@PathVariable int user_id){
-
-        if (userRepository.findById(user_id).isPresent()) {
-            return userRepository.findById(user_id).get();
-        }
-        return null;
+    @GetMapping(path = "/{user_id}")
+    public User getUserById(@PathVariable int user_id) {
+        return userRepository.findById(user_id).orElseThrow(() -> new UsernameNotFoundException("No user with id " + user_id));
     }
 
     @PostMapping("/by-mail")
@@ -59,13 +58,9 @@ public class UserController {
         return new ResponseEntity<>(byMail.getBasicInfos(), new HttpHeaders(), HttpStatus.OK);
     }
 
-    @PostMapping(path="/add")
-    public String addNewUser (@RequestParam String name, @RequestParam String mail, @RequestParam String password) {
-        // @ResponseBody means the returned String is the response, not a view name
-        // @RequestParam means it is a parameter from the GET or POST request
-
+    @PostMapping
+    public String addNewUser(@RequestParam String name, @RequestParam String mail, @RequestParam String password) {
         User user = new User();
-
         user.setName(name);
         user.setMail(mail);
         user.setPassword(passwordEncoder.encode(password));
@@ -73,17 +68,15 @@ public class UserController {
         return "Saved";
     }
 
-    @PostMapping(path="/{user_id}/delete")
-    public String deleteUserById (@PathVariable int user_id) {
-
+    @DeleteMapping(path = "/{user_id}")
+    public String deleteUserById(@PathVariable int user_id) {
         userRepository.deleteById(user_id);
         return "Done";
     }
 
-
+    //todo
     @PostMapping(path = "/{user_id}/add-booking")
     String addBookingToUser(@RequestBody Booking booking, @PathVariable int user_id) {
-
         User user = getUserById(user_id);
         if (user != null) {
             user.getBookings().add(booking);
@@ -94,43 +87,32 @@ public class UserController {
         }
     }
 
+
     @PostMapping(path = "/{user_id}/add-house")
     String addHouseToUser(@RequestBody House house, @PathVariable int user_id) {
-
         User user = getUserById(user_id);
-        if (user != null) {
-            user.getHouses().add(house);
-            userRepository.save(user);
-            return "Changed";
-        } else {
-            return "Error, no user with this id";
-        }
+        user.getHouses().add(house);
+        userRepository.save(user);
+        houseRepository.save(house);
+        return "Changed";
     }
 
     @PostMapping(path = "/{user_id}/modify-name")
     String modifyUserName(@RequestParam String name, @PathVariable int user_id) {
-
         User user = getUserById(user_id);
-        if (user != null) {
-            user.setName(name);
-            userRepository.save(user);
-            return "Changed";
-        } else {
-            return "Error, no user with this id";
-        }
+        user.setName(name);
+        userRepository.save(user);
+        return "Changed";
+
     }
 
     @PostMapping(path = "/{user_id}/modify-mail")
     String modifyUserMail(@RequestParam String mail, @PathVariable int user_id) {
-
         User user = getUserById(user_id);
-        if (user != null) {
-            user.setMail(mail);
-            userRepository.save(user);
-            return "Changed";
-        } else {
-            return "Error, no user with this id";
-        }
+        user.setMail(mail);
+        userRepository.save(user);
+        return "Changed";
+
     }
 
 }
