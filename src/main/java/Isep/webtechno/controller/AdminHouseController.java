@@ -4,12 +4,11 @@ package Isep.webtechno.controller;
 import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.HouseRepository;
-import Isep.webtechno.model.repo.UserRepository;
-import Isep.webtechno.utils.GeneralService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
@@ -17,30 +16,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/house")
-public class HouseController {
+@RequestMapping(path="/admin/house")
+public class AdminHouseController {
 
     @Autowired
     private HouseRepository houseRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private GeneralService generalService;
+
+    @GetMapping
+    private ResponseEntity<List<House>> getAll() {
+        List<House> allHouses = new ArrayList<>();
+        houseRepository.findAll().forEach(allHouses::add);
+        return new ResponseEntity<>(allHouses, new HttpHeaders(), HttpStatus.OK);
+    }
 
     @GetMapping(path = "/{house_id}")
     public House getHouseById(@PathVariable int house_id){
         return houseRepository.findById(house_id).orElseThrow(() -> new EntityNotFoundException("No book with id " + house_id));
     }
 
+
     @PostMapping(path="/add")
     public String addNewHouse (@RequestParam String title, @RequestParam String description) {
-        User user = generalService.getUserFromContext();
+        // @ResponseBody means the returned String is the response, not a view name
+        // @RequestParam means it is a parameter from the GET or POST request
+
         House house = new House();
+
         house.setTitle(title);
         house.setDescription(description);
-        house.setOwner(user);
-
-        userRepository.save(user);
         houseRepository.save(house);
         return "Saved";
     }
