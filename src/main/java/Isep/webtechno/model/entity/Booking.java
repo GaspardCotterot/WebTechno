@@ -1,5 +1,6 @@
 package Isep.webtechno.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -23,7 +24,7 @@ public class Booking {
     @OneToMany(mappedBy = "booking")
     private List<Message> messages;
 
-
+    @JsonBackReference
     @ManyToOne
     @JoinColumn
     private House house;

@@ -1,6 +1,7 @@
 package Isep.webtechno.model.entity;
 
 import Isep.webtechno.security.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
 import lombok.Data;
 import org.json.JSONException;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +34,12 @@ public class User implements UserDetails {
 
     private Role role = Role.USER;
 
-    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
     private List<Booking> bookings = new ArrayList<>();
 
-    @OneToMany(mappedBy = "owner")
+    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "owner")
     private List<House> houses;
 
 
