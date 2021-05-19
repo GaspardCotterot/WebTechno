@@ -3,6 +3,7 @@ package Isep.webtechno.controller;
 
 import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.User;
+import Isep.webtechno.model.entity.enums.HouseConstraint;
 import Isep.webtechno.model.repo.HouseRepository;
 import Isep.webtechno.model.repo.UserRepository;
 import Isep.webtechno.utils.GeneralService;
@@ -51,6 +52,23 @@ public class HouseController {
         return "Saved";
     }
 
+    @PostMapping(path = "/{houseId}")
+    ResponseEntity<House> modifyHouseTitle(@RequestParam(required = false) String title,
+                                           @RequestParam(required = false) String description,
+                                           @PathVariable int houseId) {
+        User user = generalService.getUserFromContext();
+        House house = houseRepository.findById(houseId).orElseThrow(() -> new EntityNotFoundException("No book with id " + houseId));
+        if(!user.getHouses().contains(house)) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        if(title != null && !title.equals("")) house.setTitle(title);
+        if(description != null && !description.equals("")) house.setDescription(description);
+        houseRepository.save(house);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 //    @PostMapping(path="/{house_id}/delete")
 //    public String deleteHouseById (@PathVariable int house_id) {
 //
@@ -58,18 +76,6 @@ public class HouseController {
 //        return "Done";
 //    }
 //
-//    @PostMapping(path = "/{house_id}/modify-title")
-//    String modifyHouseTitle(@RequestParam String title, @PathVariable int house_id) {
-//
-//        House house = getHouseById(house_id);
-//        if (house != null) {
-//            house.setTitle(title);
-//            houseRepository.save(house);
-//            return "Changed";
-//        } else {
-//            return "Error, no user with this id";
-//        }
-//    }
 //
 //    @PostMapping(path = "/{house_id}/modify-description")
 //    String modifyHouseDescription(@RequestParam String description, @PathVariable int house_id) {
