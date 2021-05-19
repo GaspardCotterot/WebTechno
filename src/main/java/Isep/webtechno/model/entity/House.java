@@ -1,7 +1,5 @@
 package Isep.webtechno.model.entity;
 
-import Isep.webtechno.model.entity.enums.HouseConstraint;
-import Isep.webtechno.model.entity.enums.HouseService;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 

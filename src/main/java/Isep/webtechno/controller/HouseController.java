@@ -3,19 +3,17 @@ package Isep.webtechno.controller;
 
 import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.User;
-import Isep.webtechno.model.entity.enums.HouseConstraint;
+import Isep.webtechno.model.repo.HouseConstraintRepository;
 import Isep.webtechno.model.repo.HouseRepository;
+import Isep.webtechno.model.repo.HouseServiceRepository;
 import Isep.webtechno.model.repo.UserRepository;
 import Isep.webtechno.utils.GeneralService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping(path="/house")
@@ -25,6 +23,10 @@ public class HouseController {
     private HouseRepository houseRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private HouseConstraintRepository houseConstraintRepository;
+    @Autowired
+    private HouseServiceRepository houseServiceRepository;
     @Autowired
     private GeneralService generalService;
 
@@ -72,6 +74,9 @@ public class HouseController {
     @GetMapping(path = "/test")
     House test() {
         House house = houseRepository.findById(1).orElseThrow();
+        house.getConstraints().add(houseConstraintRepository.findById(1).orElseThrow());
+        house.getConstraints().add(houseConstraintRepository.findById(2).orElseThrow());
+        house.getServices().add(houseServiceRepository.findById(1).orElseThrow());
         houseRepository.save(house);
         return house;
     }

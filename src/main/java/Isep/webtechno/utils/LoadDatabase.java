@@ -1,8 +1,8 @@
 package Isep.webtechno.utils;
 
 import Isep.webtechno.model.entity.User;
-import Isep.webtechno.model.entity.enums.HouseConstraint;
-import Isep.webtechno.model.entity.enums.HouseService;
+import Isep.webtechno.model.entity.HouseConstraint;
+import Isep.webtechno.model.entity.HouseService;
 import Isep.webtechno.model.repo.HouseConstraintRepository;
 import Isep.webtechno.model.repo.HouseServiceRepository;
 import Isep.webtechno.model.repo.UserRepository;
@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Configuration
@@ -37,23 +36,31 @@ class LoadDatabase {
         admin.setRole(Role.ADMIN);
         admin.setPassword(encoder.encode("matthieu"));
 
-        List<HouseConstraint> constraints = new ArrayList<>();
-        constraints.add(new HouseConstraint("No smoking", " No smoking in the accommodation"));
-        constraints.add(new HouseConstraint("No noise at nighttime", "No noise after 23h"));
-        constraints.add(new HouseConstraint("2 children / accommodation", "2 children maximum per accommodation"));
-        constraints.add(new HouseConstraint("No children", "No children"));
-        constraints.add(new HouseConstraint("No Pets", "No pets allowed"));
-
         List<HouseService> services = new ArrayList<>();
-        services.add(new HouseService("Keep pets", "empty desc"));
-        services.add(new HouseService("Watering plants", "empty desc"));
-        services.add(new HouseService("Clean the house", "empty desc"));
+        if (!houseServiceRepository.findAll().iterator().hasNext()) {
+            services.add(new HouseService(1, "Keep pets", "empty desc"));
+            services.add(new HouseService(2, "Watering plants", "empty desc"));
+            services.add(new HouseService(3, "Clean the house", "empty desc"));
+        }
+
+        List<HouseConstraint> constraints = new ArrayList<>();
+        if (!houseConstraintRepository.findAll().iterator().hasNext()) {
+            constraints.add(new HouseConstraint(1, "No smoking", " No smoking in the accommodation"));
+            constraints.add(new HouseConstraint(2, "No noise at nighttime", "No noise after 23h"));
+            constraints.add(new HouseConstraint(3, "2 children / accommodation", "2 children maximum per accommodation"));
+            constraints.add(new HouseConstraint(4, "No children", "No children"));
+            constraints.add(new HouseConstraint(5, "No Pets", "No pets allowed"));
+        }
+
 
         return args -> {
-            if(repository.findByMail("user@user.com").isEmpty()) log.info("Preloading basic user " + repository.save(basic));
-            if(repository.findByMail("admin@admin.com").isEmpty()) log.info("Preloading admin user " + repository.save(admin));
-            if(!houseConstraintRepository.findAll().iterator().hasNext()) log.info("Preloading constraints " + houseConstraintRepository.saveAll(constraints));
-            if(!houseServiceRepository.findAll().iterator().hasNext()) log.info("Preloading services " + houseServiceRepository.saveAll(services));
+            if (repository.findByMail("user@user.com").isEmpty())
+                log.info("Preloading basic user " + repository.save(basic));
+            if (repository.findByMail("admin@admin.com").isEmpty())
+                log.info("Preloading admin user " + repository.save(admin));
+            log.info("Preloading services " + houseServiceRepository.saveAll(services));
+            log.info("Preloading constraints " + houseConstraintRepository.saveAll(constraints));
+
         };
     }
 }
