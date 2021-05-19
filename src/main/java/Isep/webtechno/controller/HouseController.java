@@ -66,14 +66,21 @@ public class HouseController {
     ResponseEntity<House> modifyHouseTitle(@RequestParam(required = false) String title,
                                            @RequestParam(required = false) String description,
                                            @RequestParam(required = false) String constraints,
-                                           @RequestParam(required = false) List<HouseService> houseServices,
+                                           @RequestParam(required = false) String services,
                                            @PathVariable int houseId) throws JSONException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        JSONArray jsonArray = new JSONArray(constraints);
+        JSONArray constraintsAsJsonArray = new JSONArray(constraints);
         List<HouseConstraint> houseConstraints = new ArrayList<>();
-        for(int i=0; i<jsonArray.length(); i++) {
-            houseConstraints.add(mapper.readValue(jsonArray.get(i).toString(), HouseConstraint.class));
+        for(int i=0; i<constraintsAsJsonArray.length(); i++) {
+            houseConstraints.add(mapper.readValue(constraintsAsJsonArray.get(i).toString(), HouseConstraint.class));
         }
+
+        JSONArray servicesAsJsonArray = new JSONArray(services);
+        List<HouseService> houseServices = new ArrayList<>();
+        for(int i=0; i<servicesAsJsonArray.length(); i++) {
+            houseServices.add(mapper.readValue(servicesAsJsonArray.get(i).toString(), HouseService.class));
+        }
+
 
         User user = generalService.getUserFromContext();
         House house = houseRepository.findById(houseId).orElseThrow(() -> new EntityNotFoundException("No book with id " + houseId));
@@ -83,10 +90,9 @@ public class HouseController {
 
         if(title != null && !title.equals("")) house.setTitle(title);
         if(description != null && !description.equals("")) house.setDescription(description);
-        if(houseConstraints.size() != 0 ) {
-            System.out.println("nouvelles");
-            house.setConstraints(houseConstraints);
-        }
+        if(houseConstraints.size() != 0 ) house.setConstraints(houseConstraints);
+        if(houseServices.size() != 0 ) house.setServices(houseServices);
+
         houseRepository.save(house);
 
         return new ResponseEntity<>(HttpStatus.OK);
