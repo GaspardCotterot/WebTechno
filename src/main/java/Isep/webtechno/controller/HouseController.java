@@ -69,6 +69,13 @@ public class HouseController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping(path = "/test")
+    House test() {
+        House house = houseRepository.findById(1).orElseThrow();
+        houseRepository.save(house);
+        return house;
+    }
+
 //    @PostMapping(path="/{house_id}/delete")
 //    public String deleteHouseById (@PathVariable int house_id) {
 //
