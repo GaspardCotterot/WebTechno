@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,28 +69,19 @@ public class HouseController {
                                            @RequestParam(required = false) String constraints,
                                            @RequestParam(required = false) String services,
                                            @PathVariable int houseId) throws JSONException, JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        JSONArray constraintsAsJsonArray = new JSONArray(constraints);
-        List<HouseConstraint> houseConstraints = new ArrayList<>();
-        for(int i=0; i<constraintsAsJsonArray.length(); i++) {
-            houseConstraints.add(mapper.readValue(constraintsAsJsonArray.get(i).toString(), HouseConstraint.class));
-        }
-
-        JSONArray servicesAsJsonArray = new JSONArray(services);
-        List<HouseService> houseServices = new ArrayList<>();
-        for(int i=0; i<servicesAsJsonArray.length(); i++) {
-            houseServices.add(mapper.readValue(servicesAsJsonArray.get(i).toString(), HouseService.class));
-        }
-
 
         User user = generalService.getUserFromContext();
+
+        List<HouseConstraint> houseConstraints = generalService.getObjectListFromJsonString(constraints, HouseConstraint.class);
+        List<HouseService> houseServices = generalService.getObjectListFromJsonString(services, HouseService.class);
+
         House house = houseRepository.findById(houseId).orElseThrow(() -> new EntityNotFoundException("No book with id " + houseId));
         if(!user.getHouses().contains(house)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         if(title != null && !title.equals("")) house.setTitle(title);
-        if(description != null && !description.equals("")) house.setDescription(description);
+        if(description != null) house.setDescription(description);
         if(houseConstraints.size() != 0 ) house.setConstraints(houseConstraints);
         if(houseServices.size() != 0 ) house.setServices(houseServices);
 
