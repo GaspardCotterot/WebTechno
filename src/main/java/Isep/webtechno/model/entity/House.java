@@ -41,7 +41,7 @@ public class House {
 
     @JsonBackReference
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(referencedColumnName = "id")
     private User owner;
 
 

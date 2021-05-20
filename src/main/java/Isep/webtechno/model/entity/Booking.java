@@ -2,8 +2,10 @@ package Isep.webtechno.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 
@@ -16,6 +18,12 @@ public class Booking {
     private Integer id;
 
     private Integer state;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date startDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date endDate;
 
     @ManyToOne
     @JoinColumn
