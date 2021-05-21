@@ -19,15 +19,15 @@ public class House {
     @NotNull
     private String title;
 
-    private String description;
+    private String description = "";
 
-    private String address;
+    private String address = "";
 
-    private String city;
+    private String city = "";
 
     private Integer postalCode;
 
-    private String country;
+    private String country = "";
 
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "house")
