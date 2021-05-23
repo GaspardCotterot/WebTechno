@@ -1,6 +1,7 @@
 package Isep.webtechno.utils;
 
 import Isep.webtechno.model.entity.House;
+import Isep.webtechno.model.entity.House_;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -20,11 +21,10 @@ public class HouseSpecification implements Specification<House> {
 
     @Override
     public Predicate toPredicate(Root<House> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-//        final List<Predicate> predicates = new ArrayList<>();
-//        if (criteria.getLocation() != null) {
-//            predicates.add(criteriaBuilder.equal(root.get(House_.city), criteria.getLocation()));
-//        }
-//        return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
-        return null;
+        final List<Predicate> predicates = new ArrayList<>();
+        if (criteria.getLocation() != null) {
+            predicates.add(criteriaBuilder.equal(root.get(House_.city), criteria.getLocation()));
+        }
+        return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
     }
 }

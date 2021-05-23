@@ -23,8 +23,7 @@ public class BrowserController {
     public List<House> findByLocation(@ModelAttribute HouseSearch search) {
         // TODO: implement date checking
         HouseSpecification spec = new HouseSpecification(search);
-
-        return null;
+        return houseRepository.findAll(spec);
     }
 
     private boolean checkDatePattern(String date) { // Checks if a given date respects the pattern YYYY-MM-DD
