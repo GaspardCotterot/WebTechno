@@ -36,7 +36,7 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        System.out.println("User : " + username + " - Password : " + password);
+//        System.out.println("User : " + username + " - Password : " + password);
         return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
 
@@ -63,13 +63,8 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
         object.put("token", JwtUtils.headerAuthorizationPrefix + token);
 
         User user = userRepository.findByMail(authResult.getName()).orElseThrow();
-        object.put("user",
-                (new JSONObject())
-                        .put("mail", user.getMail())
-                        .put("name", user.getName())
-                        .put("role", user.getRole())
-        ); //todo add all user details
-
+        object.put("user", user.getBasicInfos());
+        System.out.println("réponse " + object);
 
         PrintWriter writer = response.getWriter();
         writer.write(object.toString());

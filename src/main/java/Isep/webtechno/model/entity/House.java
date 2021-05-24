@@ -40,7 +40,7 @@ public class House {
     private List<HouseService> services;
 
     @JsonBackReference
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id")
     private User owner;
 

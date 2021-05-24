@@ -37,13 +37,8 @@ public class HouseController {
 
     @GetMapping(path = "/{house_id}")
     public ResponseEntity<House> getHouseById(@PathVariable int house_id){
-        User user = generalService.getUserFromContext();
         House house = houseRepository.findById(house_id).orElseThrow(() -> new EntityNotFoundException("No book with id " + house_id));
-        if(user.getHouses().contains(house)) {
-            return new ResponseEntity<>(house, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
+        return new ResponseEntity<>(house, HttpStatus.OK);
     }
 
     @PostMapping(path="/add")

@@ -30,7 +30,7 @@ public class UserController {
 
     @GetMapping("/get-user-info")
     private String getUserInfoUsingToken() throws JSONException {
-        return getUser().getBasicInfos();
+        return getUser().getBasicInfos().toString();
     }
 
     @GetMapping(path = "/get-user-houses")
