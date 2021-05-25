@@ -1,7 +1,6 @@
 package Isep.webtechno.model.dto;
 
 import Isep.webtechno.model.entity.BookingState;
-import Isep.webtechno.model.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,7 +11,7 @@ public class BookingDto {
     private BookingState state;
     private Date startDate;
     private Date endDate;
-    private UserDto userDto;
+    private UserDto user;
 //    private List<Message> messages;
 //    private House house;
 }

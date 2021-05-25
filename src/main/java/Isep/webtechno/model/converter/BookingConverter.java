@@ -20,7 +20,7 @@ public class BookingConverter {
         bookingDto.setState(booking.getState());
         bookingDto.setStartDate(booking.getStartDate());
         bookingDto.setEndDate(booking.getEndDate());
-        bookingDto.setUserDto(userConverter.toDto(booking.getUser()));
+        bookingDto.setUser(userConverter.toDto(booking.getUser()));
 
         return bookingDto;
     }
