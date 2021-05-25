@@ -2,10 +2,12 @@ package Isep.webtechno.security.auth.jwt;
 
 import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.UserRepository;
+import Isep.webtechno.utils.GeneralService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,8 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    @Autowired
+    GeneralService generalService;
 
     public JwtAuthCredentialsFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
@@ -63,7 +67,7 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
         object.put("token", JwtUtils.headerAuthorizationPrefix + token);
 
         User user = userRepository.findByMail(authResult.getName()).orElseThrow();
-        object.put("user", user.getBasicInfos());
+        object.put("user", generalService.getBasicInfosFromUser(user));
         System.out.println("réponse " + object);
 
         PrintWriter writer = response.getWriter();

@@ -41,19 +41,8 @@ public class User implements UserDetails {
     private List<Booking> bookings = new ArrayList<>();
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "owner")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "owner")
     private List<House> houses;
-
-
-    //utils
-    public JSONObject getBasicInfos() throws JSONException {
-        return (new  JSONObject())
-                .put("mail", mail)
-                .put("name", name)
-                .put("role", role)
-                .put("housesIds", new JSONArray(houses.stream().map(House::getId).collect(Collectors.toList())))
-                ;
-    }
 
 
     //UserDetails methods

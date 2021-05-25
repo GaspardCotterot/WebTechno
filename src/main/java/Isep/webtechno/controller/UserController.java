@@ -23,14 +23,14 @@ public class UserController {
     @Autowired
     private HouseRepository houseRepository;
 
-    @GetMapping()
+//    @GetMapping()//todo fix
     private User getUser() {
         return generalService.getUserFromContext();
     }
 
     @GetMapping("/get-user-info")
     private String getUserInfoUsingToken() throws JSONException {
-        return getUser().getBasicInfos().toString();
+        return generalService.getBasicInfosFromUser(getUser()).toString();
     }
 
     @GetMapping(path = "/get-user-houses")
