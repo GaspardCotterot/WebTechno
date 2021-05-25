@@ -25,8 +25,9 @@ public class Booking {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
-    @ManyToOne
-    @JoinColumn
+    @JsonBackReference
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "id")
     private User user;
 
     @OneToMany(mappedBy = "booking")
