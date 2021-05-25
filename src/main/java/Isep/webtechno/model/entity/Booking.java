@@ -17,7 +17,7 @@ public class Booking {
     @GeneratedValue
     private Integer id;
 
-    private Integer state;
+    private BookingState state;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
