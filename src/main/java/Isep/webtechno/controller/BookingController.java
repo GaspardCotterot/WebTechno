@@ -14,11 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/bookings")
+@RequestMapping(path = "/bookings")
 public class BookingController {
 
     @Autowired
@@ -35,36 +35,32 @@ public class BookingController {
         return new ResponseEntity<>(allBookings, new HttpHeaders(), HttpStatus.OK);
     }
 
-//    @GetMapping(path = "/get_by_id/{booking_id}")
-//    public Booking getBookingById(@PathVariable int booking_id){
-//
-//        if (bookingRepository.findById(booking_id).isPresent()) {
-//            return bookingRepository.findById(booking_id).get();
-//        }
-//        return null;
-//    }
-
-    @PostMapping(path="/add")
-    public String addNewHouse (@RequestParam Integer state, @RequestBody Integer houseId) {
+    @PostMapping(path = "/add")
+    public String addNewHouse(@RequestParam Date startDate,
+                              @RequestParam Date endDate,
+                              @RequestParam Integer houseId,
+                              @RequestParam(required = false) Integer offeredHouseId) {//todo handle offered house
         User userFromContext = generalService.getUserFromContext();
         House house = houseRepository.findById(houseId).orElseThrow();
 
         Booking booking = new Booking();
 
-        booking.setState(BookingState.values()[state]);
+        booking.setState(BookingState.REQUEST);
+        booking.setStartDate(startDate);
+        booking.setEndDate(endDate);
         booking.setHouse(house);
         booking.setUser(userFromContext);
         bookingRepository.save(booking);
         return "Saved";
     }
 
-    @DeleteMapping(path="/{bookingId}")
-    public ResponseEntity<String> deleteBookingById (@PathVariable int bookingId) {
+    @DeleteMapping(path = "/{bookingId}")
+    public ResponseEntity<String> deleteBookingById(@PathVariable int bookingId) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-        if(userFromContext.getBookings().contains(booking)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (userFromContext.getBookings().contains(booking)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         bookingRepository.deleteById(bookingId);
-        return new  ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
