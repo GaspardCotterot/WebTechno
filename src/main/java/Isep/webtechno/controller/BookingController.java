@@ -1,6 +1,8 @@
 package Isep.webtechno.controller;
 
 
+import Isep.webtechno.model.converter.BookingConverter;
+import Isep.webtechno.model.dto.BookingDto;
 import Isep.webtechno.model.entity.Booking;
 import Isep.webtechno.model.entity.BookingState;
 import Isep.webtechno.model.entity.House;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,12 +30,24 @@ public class BookingController {
     GeneralService generalService;
     @Autowired
     HouseRepository houseRepository;
+    @Autowired
+    BookingConverter bookingConverter;
 
     @GetMapping
-    private ResponseEntity<List<Booking>> get() {
+    private ResponseEntity<List<BookingDto>> get() {
         User userFromContext = generalService.getUserFromContext();
         List<Booking> allBookings = bookingRepository.findAllByUser(userFromContext);
-        return new ResponseEntity<>(allBookings, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(bookingConverter.toDto(allBookings), new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/received")
+    private ResponseEntity<List<BookingDto>> getReceivedBookings() {
+        User userFromContext = generalService.getUserFromContext();
+        List<House> allHouses = userFromContext.getHouses();
+        List<BookingDto> bookings = new ArrayList<>();
+        allHouses.forEach(house -> bookings.addAll(bookingConverter.toDto(house.getBookings())));
+
+        return new ResponseEntity<>(bookings, HttpStatus.OK);
     }
 
     @PostMapping(path = "/add")
