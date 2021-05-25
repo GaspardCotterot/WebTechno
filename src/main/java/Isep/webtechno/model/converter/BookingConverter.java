@@ -14,13 +14,17 @@ public class BookingConverter {
     @Autowired
     UserConverter userConverter;
 
+    @Autowired
+    HouseConverter houseConverter;
+
     public BookingDto toDto(Booking booking) {
         BookingDto bookingDto = new BookingDto();
         bookingDto.setId(booking.getId());
         bookingDto.setState(booking.getState());
         bookingDto.setStartDate(booking.getStartDate());
         bookingDto.setEndDate(booking.getEndDate());
-        bookingDto.setUser(userConverter.toDto(booking.getUser()));
+        bookingDto.setUser(userConverter.toBasicDto(booking.getUser()));
+        bookingDto.setHouse(houseConverter.toDto(booking.getHouse()));
 
         return bookingDto;
     }

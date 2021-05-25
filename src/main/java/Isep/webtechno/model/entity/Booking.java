@@ -34,8 +34,8 @@ public class Booking {
     private List<Message> messages;
 
     @JsonBackReference
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "id")
     private House house;
 
 }
