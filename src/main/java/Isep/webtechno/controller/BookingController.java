@@ -73,7 +73,7 @@ public class BookingController {
     public ResponseEntity<String> deleteBookingById(@PathVariable int bookingId) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-        if (userFromContext.getBookings().contains(booking)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (!userFromContext.getBookings().contains(booking)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         bookingRepository.deleteById(bookingId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
