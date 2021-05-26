@@ -22,13 +22,9 @@ import java.util.Date;
 public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final UserConverter userConverter;
 
-    public JwtAuthCredentialsFilter(AuthenticationManager authenticationManager, UserRepository userRepository, UserConverter userConverter) {
+    public JwtAuthCredentialsFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.userConverter = userConverter;
     }
 
 
@@ -59,9 +55,6 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
 
         JSONObject object = new JSONObject();
         object.put("token", JwtUtils.headerAuthorizationPrefix + token);
-
-        User user = userRepository.findByMail(authResult.getName()).orElseThrow();
-        object.put("user", userConverter.toBasicDto(user).toJsonObject());
 
         PrintWriter writer = response.getWriter();
         writer.write(object.toString());

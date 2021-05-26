@@ -28,15 +28,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final UserConverter userConverter;
 
     @Autowired
-    public SecurityConfig(PasswordEncoder passwordEncoder, UserService userService, UserRepository userRepository, UserConverter userConverter) {
+    public SecurityConfig(PasswordEncoder passwordEncoder, UserService userService) {
         this.passwordEncoder = passwordEncoder;
         this.userService = userService;
-        this.userRepository = userRepository;
-        this.userConverter = userConverter;
     }
 
     @Override
@@ -48,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterAfter(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtAuthCredentialsFilter(authenticationManager(), userRepository, userConverter))
+                .addFilter(new JwtAuthCredentialsFilter(authenticationManager()))
                 .authorizeRequests()
                 .antMatchers("/admin").hasRole("ADMIN")
                 .antMatchers("/login").permitAll()
