@@ -78,4 +78,16 @@ public class BookingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PostMapping(path = "/change-state/{bookingId}")
+    private ResponseEntity<String> changeState(@PathVariable int bookingId, @RequestParam BookingState bookingState) {
+        User userFromContext = generalService.getUserFromContext();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        if (!booking.getHouse().getOwner().getId().equals(userFromContext.getId())) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
+        booking.setState(bookingState);
+        bookingRepository.save(booking);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
