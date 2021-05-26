@@ -37,7 +37,6 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-//        System.out.println("User : " + username + " - Password : " + password);
         return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
 
@@ -54,8 +53,6 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
                 .setExpiration(new Date((new Date()).getTime() + (1000 * 60 * 60 * 24 * 2)))//2 days
                 .compact();
 
-        System.out.println("token generated : " + token);
-
         response.addHeader(JwtUtils.headerAuthorization, JwtUtils.headerAuthorizationPrefix + token);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -65,7 +62,6 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
 
         User user = userRepository.findByMail(authResult.getName()).orElseThrow();
         object.put("user", userConverter.toBasicDto(user).toJsonObject());
-        System.out.println("réponse " + object);
 
         PrintWriter writer = response.getWriter();
         writer.write(object.toString());

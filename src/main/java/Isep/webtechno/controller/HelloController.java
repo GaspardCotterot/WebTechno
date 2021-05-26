@@ -46,7 +46,6 @@ public class HelloController {
 
     @PostMapping(path = "/free-access/userbasic")
     private UserDto testUserBasic() {
-        System.out.println("il y a une erreiur");
         User user = userRepository.findByMail("user@user.com").orElseThrow();
         return userConverter.toDto(user);
     }
