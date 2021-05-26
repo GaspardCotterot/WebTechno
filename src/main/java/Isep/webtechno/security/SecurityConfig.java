@@ -1,5 +1,6 @@
 package Isep.webtechno.security;
 
+import Isep.webtechno.model.converter.UserConverter;
 import Isep.webtechno.model.repo.UserRepository;
 import Isep.webtechno.security.auth.UserService;
 import Isep.webtechno.security.auth.jwt.JwtAuthCredentialsFilter;
@@ -26,12 +27,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final UserConverter userConverter;
 
     @Autowired
-    public SecurityConfig(PasswordEncoder passwordEncoder, UserService userService, UserRepository userRepository) {
+    public SecurityConfig(PasswordEncoder passwordEncoder, UserService userService, UserRepository userRepository, UserConverter userConverter) {
         this.passwordEncoder = passwordEncoder;
         this.userService = userService;
         this.userRepository = userRepository;
+        this.userConverter = userConverter;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterAfter(new JwtFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtAuthCredentialsFilter(authenticationManager(), userRepository))
+                .addFilter(new JwtAuthCredentialsFilter(authenticationManager(), userRepository, userConverter))
                 .authorizeRequests()
                 .antMatchers("/admin").hasRole("ADMIN")
                 .antMatchers("/login").permitAll()

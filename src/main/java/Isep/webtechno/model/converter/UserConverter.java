@@ -19,7 +19,10 @@ public class UserConverter {
 
     public BasicUserDto toBasicDto(User user) {
         BasicUserDto userDto = new BasicUserDto();
-        modelMapper.map(user, userDto);
+        userDto.setMail(user.getMail());
+        userDto.setName(user.getName());
+        userDto.setHouses(user.getHouses());
+        userDto.setRole(user.getRole());
         return userDto;
     }
 

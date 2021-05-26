@@ -1,23 +1,20 @@
 package Isep.webtechno.security.auth.jwt;
 
+import Isep.webtechno.model.converter.UserConverter;
 import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.UserRepository;
-import Isep.webtechno.utils.GeneralService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -26,12 +23,12 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    @Autowired
-    GeneralService generalService;
+    private final UserConverter userConverter;
 
-    public JwtAuthCredentialsFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public JwtAuthCredentialsFilter(AuthenticationManager authenticationManager, UserRepository userRepository, UserConverter userConverter) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.userConverter = userConverter;
     }
 
 
@@ -49,7 +46,7 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
     protected void successfulAuthentication(HttpServletRequest request,
                                             HttpServletResponse response,
                                             FilterChain chain,
-                                            Authentication authResult) throws IOException, ServletException {
+                                            Authentication authResult) {
         String token = Jwts.builder()
                 .setSubject(authResult.getName())
                 .signWith(Keys.hmacShaKeyFor(JwtUtils.secretKey.getBytes(StandardCharsets.UTF_8)))
@@ -67,7 +64,7 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
         object.put("token", JwtUtils.headerAuthorizationPrefix + token);
 
         User user = userRepository.findByMail(authResult.getName()).orElseThrow();
-        object.put("user", generalService.getBasicInfosFromUser(user));
+        object.put("user", userConverter.toBasicDto(user).toJsonObject());
         System.out.println("réponse " + object);
 
         PrintWriter writer = response.getWriter();
