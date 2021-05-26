@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/bookings")
@@ -37,6 +38,7 @@ public class BookingController {
     private ResponseEntity<List<BookingDto>> get() {
         User userFromContext = generalService.getUserFromContext();
         List<Booking> allBookings = bookingRepository.findAllByUser(userFromContext);
+        allBookings = allBookings.stream().filter(booking -> booking.getState() != BookingState.ARCHIVED).collect(Collectors.toList());
         return new ResponseEntity<>(bookingConverter.toDto(allBookings), new HttpHeaders(), HttpStatus.OK);
     }
 
@@ -46,12 +48,13 @@ public class BookingController {
         List<House> allHouses = userFromContext.getHouses();
         List<BookingDto> bookings = new ArrayList<>();
         allHouses.forEach(house -> bookings.addAll(bookingConverter.toDto(house.getBookings())));
+        List<BookingDto> filteredBookings = bookings.stream().filter(booking -> booking.getState() != BookingState.ARCHIVED).collect(Collectors.toList());
 
-        return new ResponseEntity<>(bookings, HttpStatus.OK);
+        return new ResponseEntity<>(filteredBookings, HttpStatus.OK);
     }
 
     @PostMapping(path = "/add")
-    public String addNewHouse(@RequestParam Date startDate,
+    public String addNewBooking(@RequestParam Date startDate,
                               @RequestParam Date endDate,
                               @RequestParam Integer houseId,
                               @RequestParam(required = false) Integer offeredHouseId) {//todo handle offered house
@@ -78,11 +81,23 @@ public class BookingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping(path = "/change-state/{bookingId}")
-    private ResponseEntity<String> changeState(@PathVariable int bookingId, @RequestParam BookingState bookingState) {
+    @PostMapping(path = "/change-received-booking-state/{bookingId}")
+    private ResponseEntity<String> changeReceivedBookingState(@PathVariable int bookingId, @RequestParam BookingState bookingState) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-        if (!booking.getHouse().getOwner().getId().equals(userFromContext.getId())) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (!booking.getHouse().getOwner().getId().equals(userFromContext.getId())) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        booking.setState(bookingState);
+        bookingRepository.save(booking);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/change-sent-booking-state/{bookingId}")
+    private ResponseEntity<String> changeSentBookingState(@PathVariable int bookingId, @RequestParam BookingState bookingState) {
+        User userFromContext = generalService.getUserFromContext();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        if (!userFromContext.getBookings().contains(booking)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         booking.setState(bookingState);
         bookingRepository.save(booking);
