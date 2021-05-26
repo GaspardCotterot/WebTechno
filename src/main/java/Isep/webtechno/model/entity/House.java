@@ -30,7 +30,7 @@ public class House {
     private String country = "";
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "house")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "house")
     private List<Booking> bookings;
 
     @ManyToMany
@@ -40,7 +40,7 @@ public class House {
     private List<HouseService> services;
 
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id")
     private User owner;
 
