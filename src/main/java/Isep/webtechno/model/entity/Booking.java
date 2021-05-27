@@ -17,7 +17,7 @@ public class Booking {
     @GeneratedValue
     private Integer id;
 
-    private Integer state;
+    private BookingState state;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date startDate;
@@ -25,16 +25,17 @@ public class Booking {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
 
-    @ManyToOne
-    @JoinColumn
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "id")
     private User user;
 
     @OneToMany(mappedBy = "booking")
     private List<Message> messages;
 
     @JsonBackReference
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "id")
     private House house;
 
 }
