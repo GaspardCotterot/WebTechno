@@ -6,6 +6,7 @@ import com.sun.istack.NotNull;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,6 +39,10 @@ public class House {
 
     @ManyToMany
     private List<HouseService> services;
+
+    @JsonManagedReference
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "house")
+    private List<Picture> pictures = new ArrayList<>(3);
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
