@@ -37,10 +37,10 @@ public class PictureController {
 
     @PostMapping(path = "/add-or-edit/{houseId}")
     private ResponseEntity<String> addOrEdit(@PathVariable Integer houseId,
-                                             @RequestParam(required = false) boolean isFromInternet,
-                                             @RequestParam() String url,
-                                             @RequestParam(required = false) Integer index
-    ) {
+                                             @RequestParam(required = false) String url,
+                                             @RequestParam(required = false) Integer index,
+                                             @RequestParam(name = "picture", required = false) MultipartFile multipartFile
+    ) throws IOException {
         User user = generalService.getUserFromContext();
         House house = houseRepository.findById(houseId).orElseThrow(() -> new EntityNotFoundException("No book with id " + houseId));
         if (!user.getHouses().contains(house)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -53,31 +53,24 @@ public class PictureController {
         Picture picture;
         if (index == null) {
             picture = new Picture();
-            picture.setUrl(url);
-            if (isFromInternet) picture.setFromInternet(true);
             picture.setHouse(house);
         } else {
             picture = house.getPictures().get(index);
-            picture.setUrl(url);
-            if (isFromInternet) picture.setFromInternet(true);
         }
+
+        if(multipartFile != null) {
+            String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+            FileUploadUtil.saveFile(fileName, multipartFile);
+            picture.setUrl(fileName);
+            picture.setFromInternet(false);
+        } else {
+            if(url != null) picture.setUrl(url);
+            picture.setFromInternet(true);
+        }
+
 
         pictureRepository.save(picture);
         houseRepository.save(house);
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PostMapping(path = "/upload")
-    private ResponseEntity<String> upload(@RequestParam("picture") MultipartFile multipartFile) throws IOException {
-//        User user = generalService.getUserFromContext();
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-//        Picture picture = user.getHouses().get(0).getPictures().get(0);
-//        picture.setUrl(fileName);
-//        pictureRepository.save(picture);
-
-//        String uploadDir = "photos/" + user.getHouses().get(0).getId();
-        FileUploadUtil.saveFile("photos/", fileName, multipartFile);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
