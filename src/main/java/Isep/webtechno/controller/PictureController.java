@@ -54,12 +54,14 @@ public class PictureController {
         if (index == null) {
             picture = new Picture();
             picture.setHouse(house);
+            index = user.getHouses().get(0).getPictures().size();
         } else {
             picture = house.getPictures().get(index);
         }
 
         if(multipartFile != null) {
             String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+            fileName = "User" + user.getId() + "-" + index + "-" + fileName;
             FileUploadUtil.saveFile(fileName, multipartFile);
             picture.setUrl(fileName);
             picture.setFromInternet(false);
