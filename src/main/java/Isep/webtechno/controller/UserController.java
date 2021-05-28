@@ -8,6 +8,7 @@ import Isep.webtechno.model.repo.UserRepository;
 import Isep.webtechno.utils.GeneralService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,8 @@ public class UserController {
     private GeneralService generalService;
     @Autowired
     private UserConverter userConverter;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 //    @GetMapping()//todo fix
     private User getUser() {
@@ -40,11 +43,13 @@ public class UserController {
 
 
     @PostMapping(path = "/modify-profile")
-    String modifyUserMail(@RequestParam String name, @RequestParam String mail) {
-        System.out.println("\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!\n!" + name + " " + mail);
+    String modifyUserMail(@RequestParam String name, @RequestParam String mail, @RequestParam String password) {
         User user = getUser();
         user.setName(name);
         user.setMail(mail);
+        if (!password.equals("undefined") && password.length() > 1){
+            user.setPassword(passwordEncoder.encode(password));
+        }
         userRepository.save(user);
         return "Changed";
     }
