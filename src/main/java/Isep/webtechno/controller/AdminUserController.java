@@ -36,6 +36,12 @@ public class AdminUserController {
         return new ResponseEntity<>(allUsers, new HttpHeaders(), HttpStatus.OK);
     }
 
+    @GetMapping(path="/all")
+    public @ResponseBody Iterable<User> getAllUsers() {
+        // This returns a JSON or XML with the users
+        return userRepository.findAll();
+    }
+
     @GetMapping(path = "/{user_id}")
     public User getUserById(@PathVariable int user_id) {
         return userRepository.findById(user_id).orElseThrow(() -> new UsernameNotFoundException("No user with id " + user_id));
@@ -51,7 +57,7 @@ public class AdminUserController {
         return "Saved";
     }
 
-    @DeleteMapping(path = "/{user_id}")
+    @DeleteMapping(path = "/delete/{user_id}")
     public String deleteUserById(@PathVariable int user_id) {
         userRepository.deleteById(user_id);
         return "Done";

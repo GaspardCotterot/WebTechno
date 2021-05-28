@@ -19,18 +19,18 @@ public class House {
     @NotNull
     private String title;
 
-    private String description;
+    private String description = "";
 
-    private String address;
+    private String address = "";
 
-    private String city;
+    private String city = "";
 
     private Integer postalCode;
 
-    private String country;
+    private String country = "";
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "house")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "house")
     private List<Booking> bookings;
 
     @ManyToMany
@@ -40,8 +40,8 @@ public class House {
     private List<HouseService> services;
 
     @JsonBackReference
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "id")
     private User owner;
 
 

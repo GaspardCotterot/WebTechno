@@ -11,8 +11,6 @@ import Isep.webtechno.model.repo.HouseServiceRepository;
 import Isep.webtechno.model.repo.UserRepository;
 import Isep.webtechno.utils.GeneralService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -41,13 +37,8 @@ public class HouseController {
 
     @GetMapping(path = "/{house_id}")
     public ResponseEntity<House> getHouseById(@PathVariable int house_id){
-        User user = generalService.getUserFromContext();
         House house = houseRepository.findById(house_id).orElseThrow(() -> new EntityNotFoundException("No book with id " + house_id));
-        if(user.getHouses().contains(house)) {
-            return new ResponseEntity<>(house, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
+        return new ResponseEntity<>(house, HttpStatus.OK);
     }
 
     @PostMapping(path="/add")
@@ -66,6 +57,10 @@ public class HouseController {
     @PostMapping(path = "/{houseId}")
     ResponseEntity<House> modifyHouseTitle(@RequestParam(required = false) String title,
                                            @RequestParam(required = false) String description,
+                                           @RequestParam(required = false) String address,
+                                           @RequestParam(required = false) String city,
+                                           @RequestParam(required = false) String country,
+                                           @RequestParam(required = false) Integer postalCode,
                                            @RequestParam(required = false) String constraints,
                                            @RequestParam(required = false) String services,
                                            @PathVariable int houseId) throws JSONException, JsonProcessingException {
@@ -82,6 +77,10 @@ public class HouseController {
 
         if(title != null && !title.equals("")) house.setTitle(title);
         if(description != null) house.setDescription(description);
+        if(city != null) house.setCity(city);
+        if(country != null) house.setCountry(country);
+        if(address != null) house.setAddress(address);
+        if(postalCode != null) house.setPostalCode(postalCode);
         if(houseConstraints.size() != 0 ) house.setConstraints(houseConstraints);
         if(houseServices.size() != 0 ) house.setServices(houseServices);
 

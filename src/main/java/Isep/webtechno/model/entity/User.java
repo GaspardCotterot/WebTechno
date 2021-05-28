@@ -4,6 +4,7 @@ import Isep.webtechno.security.Role;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
 import lombok.Data;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -35,22 +37,12 @@ public class User implements UserDetails {
     private Role role = Role.USER;
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Booking> bookings = new ArrayList<>();
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<House> houses;
-
-
-    //utils
-    public String getBasicInfos() throws JSONException {
-         return (new  JSONObject())
-                 .put("mail", mail)
-                 .put("name", name)
-                 .put("role", role)
-                 .toString();
-    }
 
 
     //UserDetails methods
