@@ -1,9 +1,12 @@
 package Isep.webtechno.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
 import lombok.Data;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,14 +33,16 @@ public class House {
 
     private String country = "";
 
-    @JsonManagedReference
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "house")
+    @JsonIgnore
+    @OneToMany(mappedBy = "house")
     private List<Booking> bookings;
 
-    @ManyToMany
+    @ManyToMany()
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<HouseConstraint> constraints;
 
-    @ManyToMany
+    @ManyToMany()
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<HouseService> services;
 
     @JsonManagedReference
