@@ -13,12 +13,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @RestController
@@ -47,26 +50,32 @@ public class PictureController {
 
         if (index == null && house.getPictures().size() >= 3)
             return new ResponseEntity<>("Cannot add another picture (max is 3)", HttpStatus.BAD_REQUEST);
-        if (index != null && house.getPictures().size() <= index)
-            return new ResponseEntity<>("Cannot get picture (index out of bound)", HttpStatus.BAD_REQUEST);
+        if (index != null && house.getPictures().size() <= index) {
+            if (index >= 3)
+                return new ResponseEntity<>("Cannot get picture (index out of bound)", HttpStatus.BAD_REQUEST);
+            index = null;
+        }
 
+        boolean isNew = true;
         Picture picture;
         if (index == null) {
             picture = new Picture();
             picture.setHouse(house);
-            index = user.getHouses().get(0).getPictures().size();
+            index = house.getPictures().size();
         } else {
+            isNew = false;
             picture = house.getPictures().get(index);
         }
 
-        if(multipartFile != null) {
+        if (multipartFile != null) {
+            if(!isNew) FileSystemUtils.deleteRecursively(FileUploadUtil.ROOT.resolve(picture.getUrl()));
             String fileName = StringUtils.cleanPath(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-            fileName = "User" + user.getId() + "-" + index + "-" + fileName;
+            fileName = "User" + user.getId() + "-House-" + house.getId() + "-" + index + "-" + fileName;
             FileUploadUtil.saveFile(fileName, multipartFile);
             picture.setUrl(fileName);
             picture.setFromInternet(false);
         } else {
-            if(url != null) picture.setUrl(url);
+            if (url != null) picture.setUrl(url);
             picture.setFromInternet(true);
         }
 
@@ -85,6 +94,21 @@ public class PictureController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 
+    @DeleteMapping(path = "/{pictureId}")
+    private ResponseEntity<String> deleteImage(@PathVariable Integer pictureId) throws IOException {
+        User user = generalService.getUserFromContext();
+        List<Integer> allPictureIds = new ArrayList<>();
+        user.getHouses().forEach(house -> house.getPictures().forEach(picture -> allPictureIds.add(picture.getId())));
+        if (!allPictureIds.contains(pictureId)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        Picture picture = pictureRepository.findById(pictureId).orElseThrow(() -> new EntityNotFoundException("No picture with id " + pictureId));
+
+        if(!picture.isFromInternet()) {
+            FileSystemUtils.deleteRecursively(FileUploadUtil.ROOT.resolve(picture.getUrl()));
+        }
+        pictureRepository.delete(picture);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 
 }

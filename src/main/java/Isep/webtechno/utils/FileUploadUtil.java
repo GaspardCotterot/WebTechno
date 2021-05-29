@@ -13,11 +13,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class FileUploadUtil {
-    private static final Path root = Paths.get("upload-photos");
+    public static final Path ROOT = Paths.get("upload-photos");
 
     public static Resource load(String filename) {
         try {
-            Path file = root.resolve(filename);
+            Path file = ROOT.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
 
             if (resource.exists() || resource.isReadable()) {
@@ -31,7 +31,7 @@ public class FileUploadUtil {
     }
 
     public static void saveFile(String fileName, MultipartFile multipartFile) throws IOException {
-        Path uploadPath = root;
+        Path uploadPath = ROOT;
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
