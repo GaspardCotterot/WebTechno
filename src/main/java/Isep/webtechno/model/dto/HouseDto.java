@@ -1,5 +1,6 @@
 package Isep.webtechno.model.dto;
 
+import Isep.webtechno.model.entity.User;
 import lombok.Data;
 
 @Data
@@ -14,5 +15,5 @@ public class HouseDto {
 //    private List<Booking> bookings;
 //    private List<HouseConstraint> constraints;
 //    private List<HouseService> services;
-//    private User owner;
+// private User owner;
 }
