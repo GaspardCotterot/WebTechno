@@ -67,7 +67,7 @@ public class AdminHouseController {
         return "Saved";
     }
 
-    @PostMapping(path="/delete/{house_id}")
+    @DeleteMapping(path="/delete/{house_id}")
     public String deleteHouseById (@PathVariable int house_id) {
 
         houseRepository.deleteById(house_id);
