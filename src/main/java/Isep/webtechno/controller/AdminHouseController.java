@@ -1,6 +1,8 @@
 package Isep.webtechno.controller;
 
 
+import Isep.webtechno.model.converter.HouseConverter;
+import Isep.webtechno.model.dto.HouseDto;
 import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.HouseRepository;
@@ -14,10 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path="/admin/house")
 public class AdminHouseController {
+
+    @Autowired
+    HouseConverter converter;
 
     @Autowired
     private HouseRepository houseRepository;
@@ -29,10 +35,23 @@ public class AdminHouseController {
         return new ResponseEntity<>(allHouses, new HttpHeaders(), HttpStatus.OK);
     }
 
+    @GetMapping(path="/all")
+    public @ResponseBody Iterable<House> getAllHouses() {
+        // This returns a JSON or XML with the users
+        return houseRepository.findAll();
+    }
+
     @GetMapping(path = "/{house_id}")
     public House getHouseById(@PathVariable int house_id){
         return houseRepository.findById(house_id).orElseThrow(() -> new EntityNotFoundException("No book with id " + house_id));
     }
+
+    /* public @ResponseBody Iterable<HouseDto> getAllHouses() {
+        // This returns a JSON or XML with the users
+        List<House> allHouses = (List<House>) houseRepository.findAll();
+        List<HouseDto> allHousesDto = allHouses.stream().map(house -> converter.toDto(house)).collect(Collectors.toList());
+        return allHousesDto;
+    }*/
 
 
     @PostMapping(path="/add")
@@ -48,7 +67,7 @@ public class AdminHouseController {
         return "Saved";
     }
 
-    @PostMapping(path="/{house_id}/delete")
+    @DeleteMapping(path="/delete/{house_id}")
     public String deleteHouseById (@PathVariable int house_id) {
 
         houseRepository.deleteById(house_id);
