@@ -33,7 +33,6 @@ public class Booking {
     @OneToMany(mappedBy = "booking")
     private List<Message> messages;
 
-    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id")
     private House house;
