@@ -18,12 +18,8 @@ public class BrowserController {
     private HouseRepository houseRepository;
 
     @PostMapping(path = "/search")
-    public List<House> findByLocation(@RequestParam String location, @RequestParam String arrival, @RequestParam String departure) {
+    public List<House> findByLocation(@ModelAttribute HouseSearch search) {
         // TODO: implement date checking
-        HouseSearch search = new HouseSearch();
-        search.setLocation(location);
-        search.setArrival(arrival);
-        search.setDeparture(departure);
         HouseSpecification spec = new HouseSpecification(search);
         return houseRepository.findAll(spec);
     }
