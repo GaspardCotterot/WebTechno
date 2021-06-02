@@ -5,23 +5,25 @@ import Isep.webtechno.model.repo.HouseRepository;
 import Isep.webtechno.utils.HouseSearch;
 import Isep.webtechno.utils.HouseSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController
+@RequestMapping(path = "/browse")
 public class BrowserController {
 
     @Autowired
     private HouseRepository houseRepository;
 
     @PostMapping(path = "/search")
-    public List<House> findByLocation(@ModelAttribute HouseSearch search) {
+    public List<House> findByLocation(@RequestParam String location, @RequestParam String arrival, @RequestParam String departure) {
         // TODO: implement date checking
+        HouseSearch search = new HouseSearch();
+        search.setLocation(location);
+        search.setArrival(arrival);
+        search.setDeparture(departure);
         HouseSpecification spec = new HouseSpecification(search);
         return houseRepository.findAll(spec);
     }
