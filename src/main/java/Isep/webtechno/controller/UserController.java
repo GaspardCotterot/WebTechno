@@ -42,5 +42,16 @@ public class UserController {
     }
 
 
+    @PostMapping(path = "/modify-profile")
+    String modifyUserMail(@RequestParam String name, @RequestParam String mail, @RequestParam String password) {
+        User user = getUser();
+        user.setName(name);
+        user.setMail(mail);
+        if (!password.equals("undefined") && password.length() > 1){
+            user.setPassword(passwordEncoder.encode(password));
+        }
+        userRepository.save(user);
+        return "Changed";
+    }
 
 }
