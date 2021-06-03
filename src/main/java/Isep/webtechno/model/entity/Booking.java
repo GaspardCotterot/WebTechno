@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "bookings")
-public class Booking {
+public class Booking {//todo refacto
     @Id
     @GeneratedValue
     private Integer id;

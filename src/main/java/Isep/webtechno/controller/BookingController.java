@@ -48,16 +48,18 @@ public class BookingController {
         List<House> allHouses = userFromContext.getHouses();
         List<BookingDto> bookings = new ArrayList<>();
         allHouses.forEach(house -> bookings.addAll(bookingConverter.toDto(house.getBookings())));
-        List<BookingDto> filteredBookings = bookings.stream().filter(booking -> booking.getState() != BookingState.ARCHIVED).collect(Collectors.toList());
+        List<BookingDto> filteredBookings = bookings.stream()
+                .filter(booking -> booking.getState() == BookingState.REQUEST || booking.getState() == BookingState.ACCEPTED)
+                .collect(Collectors.toList());
 
         return new ResponseEntity<>(filteredBookings, HttpStatus.OK);
     }
 
     @PostMapping(path = "/add")
     public String addNewBooking(@RequestParam Date startDate,
-                              @RequestParam Date endDate,
-                              @RequestParam Integer houseId,
-                              @RequestParam(required = false) Integer offeredHouseId) {//todo handle offered house
+                                @RequestParam Date endDate,
+                                @RequestParam Integer houseId,
+                                @RequestParam(required = false) Integer offeredHouseId) {//todo handle offered house
         User userFromContext = generalService.getUserFromContext();
         House house = houseRepository.findById(houseId).orElseThrow();
 
@@ -85,7 +87,8 @@ public class BookingController {
     private ResponseEntity<String> changeReceivedBookingState(@PathVariable int bookingId, @RequestParam BookingState bookingState) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-        if (!booking.getHouse().getOwner().getId().equals(userFromContext.getId())) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (!booking.getHouse().getOwner().getId().equals(userFromContext.getId()))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         booking.setState(bookingState);
         bookingRepository.save(booking);
