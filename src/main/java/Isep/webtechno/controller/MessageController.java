@@ -37,18 +37,18 @@ public class MessageController {
         return null;
     }
 
-    @PostMapping(path="/add")
-    public String addNewMessage (@RequestBody Booking booking, @RequestBody Date date, @RequestParam Boolean isFromOwner, @RequestParam String text) {
-        // @ResponseBody means the returned String is the response, not a view name
-        // @RequestParam means it is a parameter from the GET or POST request
-
-        Message message = new Message();
-
-        message.setBooking(booking);
-        message.setDate(date);
-        message.setIsFromOwner(isFromOwner);
-        message.setText(text);
-        messageRepository.save(message);
-        return "Saved";
-    }
+//    @PostMapping(path="/add")
+//    public String addNewMessage (@RequestBody Booking booking, @RequestBody Date date, @RequestParam Boolean isFromOwner, @RequestParam String text) {
+//        // @ResponseBody means the returned String is the response, not a view name
+//        // @RequestParam means it is a parameter from the GET or POST request
+//
+//        Message message = new Message();
+//
+//        message.setBooking(booking);
+//        message.setDate(date);
+//        message.setIsFromOwner(isFromOwner);
+//        message.setText(text);
+//        messageRepository.save(message);
+//        return "Saved";
+//    }
 }

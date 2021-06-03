@@ -33,9 +33,9 @@ public class House {
 
     private String country = "";
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "house")
-    private List<Booking> bookings;
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "house")
+//    private List<Booking> bookings;
 
     @ManyToMany()
     @LazyCollection(LazyCollectionOption.FALSE)

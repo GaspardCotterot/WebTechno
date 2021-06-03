@@ -14,14 +14,14 @@ public class Message {
     @GeneratedValue
     private Integer id;
 
-    private Boolean isFromOwner;
+    @ManyToOne
+    private User userSending;
+
+    @ManyToOne
+    private User userReceiving;
 
     private String text;
 
     private Date date;
-
-    @ManyToOne
-    @JoinColumn
-    private Booking booking;
 
 }
