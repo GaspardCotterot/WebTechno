@@ -4,11 +4,12 @@ import Isep.webtechno.model.converter.UserConverter;
 import Isep.webtechno.model.dto.BasicUserDto;
 import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.User;
+import Isep.webtechno.model.repo.UserRepository;
 import Isep.webtechno.utils.GeneralService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,9 +18,13 @@ import java.util.List;
 public class UserController {
 
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
     private GeneralService generalService;
     @Autowired
     private UserConverter userConverter;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 //    @GetMapping()//todo fix
     private User getUser() {
