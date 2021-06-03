@@ -23,7 +23,15 @@ public class HouseSpecification implements Specification<House> {
     public Predicate toPredicate(Root<House> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
         final List<Predicate> predicates = new ArrayList<>();
         if (criteria.getLocation() != null) {
-            predicates.add(criteriaBuilder.equal(root.get(House_.city), criteria.getLocation()));
+            final List<Predicate> locationPredicates = new ArrayList<>();
+            String[] locationInfos = criteria.getLocation().split(" ");
+            for (String indication : locationInfos) {
+                locationPredicates.add(criteriaBuilder.equal(root.get(House_.city), indication));
+            }
+            for (String indication : locationInfos) {
+                locationPredicates.add(criteriaBuilder.equal(root.get(House_.country), indication));
+            }
+            predicates.add(criteriaBuilder.or(locationPredicates.toArray(new Predicate[locationPredicates.size()])));
         }
         return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
     }
