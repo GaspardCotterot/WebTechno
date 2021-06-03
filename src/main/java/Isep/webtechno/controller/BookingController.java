@@ -37,22 +37,21 @@ public class BookingController {
     @GetMapping
     private ResponseEntity<List<BookingDto>> get() {
         User userFromContext = generalService.getUserFromContext();
-        List<Booking> allBookings = bookingRepository.findAllByUser(userFromContext);
+        List<Booking> allBookings = bookingRepository.findAllByUser1(userFromContext);
         allBookings = allBookings.stream().filter(booking -> booking.getState() != BookingState.ARCHIVED).collect(Collectors.toList());
-        return new ResponseEntity<>(bookingConverter.toDto(allBookings), new HttpHeaders(), HttpStatus.OK);
+        allBookings.forEach(booking -> System.out.println("aff " + booking.getId()));
+        return new ResponseEntity<>(bookingConverter.toDto(allBookings), HttpStatus.OK);
     }
 
     @GetMapping(path = "/received")
     private ResponseEntity<List<BookingDto>> getReceivedBookings() {
         User userFromContext = generalService.getUserFromContext();
-        List<House> allHouses = userFromContext.getHouses();
-        List<BookingDto> bookings = new ArrayList<>();
-        allHouses.forEach(house -> bookings.addAll(bookingConverter.toDto(house.getBookings())));
-        List<BookingDto> filteredBookings = bookings.stream()
+        List<Booking> bookings = bookingRepository.findAllByUser2(userFromContext);
+        List<Booking> filteredBookings = bookings.stream()
                 .filter(booking -> booking.getState() == BookingState.REQUEST || booking.getState() == BookingState.ACCEPTED)
                 .collect(Collectors.toList());
 
-        return new ResponseEntity<>(filteredBookings, HttpStatus.OK);
+        return new ResponseEntity<>(bookingConverter.toDto(filteredBookings), HttpStatus.OK);
     }
 
     @PostMapping(path = "/add")
@@ -66,10 +65,12 @@ public class BookingController {
         Booking booking = new Booking();
 
         booking.setState(BookingState.REQUEST);
-        booking.setStartDate(startDate);
-        booking.setEndDate(endDate);
-        booking.setHouse(house);
-        booking.setUser(userFromContext);
+        booking.setStartDateHouse1(startDate);
+        booking.setEndDateHouse1(endDate);
+        booking.setHouseWantedByUser1(house);
+        booking.setUser1(userFromContext);
+        booking.setUser2(house.getOwner());
+
         bookingRepository.save(booking);
         return "Saved";
     }
@@ -78,7 +79,7 @@ public class BookingController {
     public ResponseEntity<String> deleteBookingById(@PathVariable int bookingId) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-        if (!userFromContext.getBookings().contains(booking)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (!booking.getUser1().equals(userFromContext)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         bookingRepository.deleteById(bookingId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -87,7 +88,7 @@ public class BookingController {
     private ResponseEntity<String> changeReceivedBookingState(@PathVariable int bookingId, @RequestParam BookingState bookingState) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-        if (!booking.getHouse().getOwner().getId().equals(userFromContext.getId()))
+        if (!booking.getUser2().equals(userFromContext))
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         booking.setState(bookingState);
@@ -100,7 +101,7 @@ public class BookingController {
     private ResponseEntity<String> changeSentBookingState(@PathVariable int bookingId, @RequestParam BookingState bookingState) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-        if (!userFromContext.getBookings().contains(booking)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (!booking.getUser1().equals(userFromContext)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         booking.setState(bookingState);
         bookingRepository.save(booking);

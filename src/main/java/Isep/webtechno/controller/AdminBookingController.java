@@ -46,8 +46,8 @@ public class AdminBookingController {
         Booking booking = new Booking();
 
         booking.setState(BookingState.values()[state]);
-        booking.setHouse(house);
-        booking.setUser(user);
+        booking.setHouseWantedByUser1(house);
+        booking.setUser1(user);
         bookingRepository.save(booking);
         return "Saved";
     }

@@ -1,6 +1,7 @@
 package Isep.webtechno.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -19,22 +20,40 @@ public class Booking {//todo refacto
 
     private BookingState state;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date startDate;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date endDate;
-
-    @JsonBackReference
+    //    @JsonBackReference
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id")
-    private User user;
+    private User user1; //user sending
 
-    @OneToMany(mappedBy = "booking")
-    private List<Message> messages;
-
+    //    @JsonBackReference
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id")
-    private House house;
+    private User user2;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "id")
+    private House houseWantedByUser1;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "id")
+    private House houseWantedByUser2;
+
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date startDateHouse1;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date endDateHouse1;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date startDateHouse2;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date endDateHouse2;
+
 
 }
