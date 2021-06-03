@@ -15,7 +15,7 @@ public class BasicUserDto {
     private String name;
     private String mail;
     private Role role = Role.USER;
-    private List<House> houses;
+    private List<HouseDto> houses;
 
 
     public JSONObject toJsonObject() throws JSONException {
@@ -23,7 +23,7 @@ public class BasicUserDto {
         jsonObject.put("name", name);
         jsonObject.put("mail", mail);
         jsonObject.put("role", role);
-        jsonObject.put("housesIds", new JSONArray(getHouses().stream().map(House::getId).collect(Collectors.toList())));
+        jsonObject.put("housesIds", new JSONArray(getHouses().stream().map(HouseDto::getId).collect(Collectors.toList())));
         return jsonObject;
     }
 }

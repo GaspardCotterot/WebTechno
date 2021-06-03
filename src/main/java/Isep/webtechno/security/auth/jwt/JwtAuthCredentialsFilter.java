@@ -46,7 +46,7 @@ public class JwtAuthCredentialsFilter extends UsernamePasswordAuthenticationFilt
                 .setSubject(authResult.getName())
                 .signWith(Keys.hmacShaKeyFor(JwtUtils.secretKey.getBytes(StandardCharsets.UTF_8)))
                 .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + (1000 * 60 * 60 * 24 * 2)))//2 days
+                .setExpiration(new Date((new Date()).getTime() + (1000 * 60 * 60 * 24 * 7 * 2)))//2 weeks
                 .compact();
 
         response.addHeader(JwtUtils.headerAuthorization, JwtUtils.headerAuthorizationPrefix + token);

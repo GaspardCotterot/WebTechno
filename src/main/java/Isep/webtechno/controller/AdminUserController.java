@@ -64,17 +64,17 @@ public class AdminUserController {
     }
 
     //todo
-    @PostMapping(path = "/{user_id}/add-booking")
-    String addBookingToUser(@RequestBody Booking booking, @PathVariable int user_id) {
-        User user = getUserById(user_id);
-        if (user != null) {
-            user.getBookings().add(booking);
-            userRepository.save(user);
-            return "Changed";
-        } else {
-            return "Error, no user with this id";
-        }
-    }
+//    @PostMapping(path = "/{user_id}/add-booking")
+//    String addBookingToUser(@RequestBody Booking booking, @PathVariable int user_id) {
+//        User user = getUserById(user_id);
+//        if (user != null) {
+//            user.getBookings().add(booking);
+//            userRepository.save(user);
+//            return "Changed";
+//        } else {
+//            return "Error, no user with this id";
+//        }
+//    }
 
 
     @PostMapping(path = "/{user_id}/add-house")

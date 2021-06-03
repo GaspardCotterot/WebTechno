@@ -36,9 +36,9 @@ public class User implements UserDetails {
 
     private Role role = Role.USER;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Booking> bookings = new ArrayList<>();
+//    @JsonManagedReference
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+//    private List<Booking> bookings = new ArrayList<>();
 
     @JsonManagedReference
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
