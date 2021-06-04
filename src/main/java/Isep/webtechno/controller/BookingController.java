@@ -2,7 +2,9 @@ package Isep.webtechno.controller;
 
 
 import Isep.webtechno.model.converter.BookingConverter;
+import Isep.webtechno.model.converter.HouseConverter;
 import Isep.webtechno.model.dto.BookingDto;
+import Isep.webtechno.model.dto.HouseDto;
 import Isep.webtechno.model.entity.Booking;
 import Isep.webtechno.model.entity.BookingState;
 import Isep.webtechno.model.entity.House;
@@ -31,6 +33,8 @@ public class BookingController {
     GeneralService generalService;
     @Autowired
     HouseRepository houseRepository;
+    @Autowired
+    HouseConverter houseConverter;
     @Autowired
     BookingConverter bookingConverter;
 
@@ -97,7 +101,7 @@ public class BookingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping(path = "/change-sent-booking-state/{bookingId}")
+    @PostMapping(path = "/change-sent-booking-state/{bookingId}")//todo simplify
     private ResponseEntity<String> changeSentBookingState(@PathVariable int bookingId, @RequestParam BookingState bookingState) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
@@ -109,4 +113,22 @@ public class BookingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping(path = "/get-others-houses/{bookingId}")
+    private ResponseEntity<List<HouseDto>> getOthersHouses(@PathVariable Integer bookingId) {
+        User userFromContext = generalService.getUserFromContext();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        System.out.println("usercontext" + userFromContext.getId());
+        System.out.println("user1" + booking.getUser1().getId());
+        System.out.println("user2" + booking.getUser2().getId());
+        if (!booking.getUser1().equals(userFromContext) && !booking.getUser2().equals(userFromContext))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        List<House> houses;
+        if(booking.getUser1().equals(userFromContext)) {
+            houses = booking.getUser2().getHouses();
+        } else {
+            houses = booking.getUser1().getHouses();
+        }
+        return new ResponseEntity<>(houseConverter.toDto(houses), HttpStatus.OK);
+    }
 }
