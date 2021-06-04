@@ -13,12 +13,10 @@ import Isep.webtechno.model.repo.BookingRepository;
 import Isep.webtechno.model.repo.HouseRepository;
 import Isep.webtechno.utils.GeneralService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -117,9 +115,6 @@ public class BookingController {
     private ResponseEntity<List<HouseDto>> getOthersHouses(@PathVariable Integer bookingId) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-        System.out.println("usercontext" + userFromContext.getId());
-        System.out.println("user1" + booking.getUser1().getId());
-        System.out.println("user2" + booking.getUser2().getId());
         if (!booking.getUser1().equals(userFromContext) && !booking.getUser2().equals(userFromContext))
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
