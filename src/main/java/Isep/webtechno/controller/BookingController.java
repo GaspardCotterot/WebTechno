@@ -41,7 +41,6 @@ public class BookingController {
         User userFromContext = generalService.getUserFromContext();
         List<Booking> allBookings = bookingRepository.findAllByUser1(userFromContext);
         allBookings = allBookings.stream().filter(booking -> booking.getState() != BookingState.ARCHIVED).collect(Collectors.toList());
-        allBookings.forEach(booking -> System.out.println("aff " + booking.getId()));
         return new ResponseEntity<>(bookingConverter.toDto(allBookings), HttpStatus.OK);
     }
 
@@ -119,11 +118,44 @@ public class BookingController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         List<House> houses;
-        if(booking.getUser1().equals(userFromContext)) {
+        if (booking.getUser1().equals(userFromContext)) {
             houses = booking.getUser2().getHouses();
         } else {
             houses = booking.getUser1().getHouses();
         }
         return new ResponseEntity<>(houseConverter.toDto(houses), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/{bookingId}")
+    private ResponseEntity<String> editBooking(@PathVariable Integer bookingId,
+                                               @RequestParam(required = false) Date startDate,
+                                               @RequestParam(required = false) Date endDate,
+                                               @RequestParam(required = false) Integer houseId) {
+
+        User userFromContext = generalService.getUserFromContext();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        if (!booking.getUser1().equals(userFromContext) && !booking.getUser2().equals(userFromContext))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+
+        if (booking.getUser1().equals(userFromContext)) {
+            booking.setStartDateHouse1(startDate);
+            booking.setEndDateHouse1(endDate);
+            if (houseId != null) {
+                House house = houseRepository.findById(houseId).orElseThrow();
+                booking.setHouseWantedByUser1(house);
+            }
+        } else {
+            booking.setStartDateHouse2(startDate);
+            booking.setEndDateHouse2(endDate);
+            if (houseId != null) {
+                House house = houseRepository.findById(houseId).orElseThrow();
+                booking.setHouseWantedByUser2(house);
+            }
+        }
+
+        bookingRepository.save(booking);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
