@@ -30,8 +30,11 @@ public class BookingConverter {
         bookingDto.setStartDateHouse2(booking.getStartDateHouse2());
         bookingDto.setEndDateHouse2(booking.getEndDateHouse2());
         bookingDto.setUser2(userConverter.toBasicDto(booking.getUser2()));
-//        if (booking.getHouseWantedByUser2() != null)
-//            bookingDto.setHouseWantedByUser2(houseConverter.toDto(booking.getHouseWantedByUser2()));
+        if (booking.getHouseWantedByUser2() != null)
+            bookingDto.setHouseWantedByUser2(houseConverter.toDto(booking.getHouseWantedByUser2()));
+
+        bookingDto.setHasUser1Accepted(booking.isHasUser1Accepted());
+        bookingDto.setHasUser2Accepted(booking.isHasUser2Accepted());
 
         return bookingDto;
     }
