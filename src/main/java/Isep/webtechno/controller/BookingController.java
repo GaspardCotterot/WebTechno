@@ -145,6 +145,7 @@ public class BookingController {
                 House house = houseRepository.findById(houseId).orElseThrow();
                 booking.setHouseWantedByUser1(house);
             }
+            booking.setHasUser2Accepted(false);
         } else {
             booking.setStartDateHouse2(startDate);
             booking.setEndDateHouse2(endDate);
@@ -152,10 +153,41 @@ public class BookingController {
                 House house = houseRepository.findById(houseId).orElseThrow();
                 booking.setHouseWantedByUser2(house);
             }
+            booking.setHasUser1Accepted(false);
         }
 
         bookingRepository.save(booking);
 
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "{bookingId}")
+    private ResponseEntity<String> acceptBooking(@PathVariable Integer bookingId) {
+        User userFromContext = generalService.getUserFromContext();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+
+        if (!booking.getStartDateHouse1().equals(booking.getStartDateHouse2()))
+            return new ResponseEntity<>("Starting dates does not match", HttpStatus.BAD_REQUEST);
+        if (!booking.getEndDateHouse1().equals(booking.getEndDateHouse2()))
+            return new ResponseEntity<>("Ending dates does not match", HttpStatus.BAD_REQUEST);
+
+        if (booking.getUser1().equals(userFromContext)) {
+            if (booking.getHouseWantedByUser2() == null)
+                return new ResponseEntity<>("No house selected", HttpStatus.BAD_REQUEST);
+            booking.setHasUser1Accepted(true);
+        } else if (booking.getUser2().equals(userFromContext)) {
+            if (booking.getHouseWantedByUser1() == null)
+                return new ResponseEntity<>("No house selected", HttpStatus.BAD_REQUEST);
+            booking.setHasUser2Accepted(true);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        if (booking.isHasUser1Accepted() && booking.isHasUser2Accepted()) {
+            booking.setState(BookingState.ACCEPTED);
+        }
+
+        bookingRepository.save(booking);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
