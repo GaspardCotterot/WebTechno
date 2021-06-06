@@ -33,6 +33,10 @@ public class HouseSpecification implements Specification<House> {
             }
             predicates.add(criteriaBuilder.or(locationPredicates.toArray(new Predicate[locationPredicates.size()])));
         }
+        // TODO: check if house is not booked
+//        if (criteria.getArrival() != null && criteria.getDeparture() != null) {
+//            predicates.add(criteriaBuilder);
+//        }
         return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
     }
 }
