@@ -55,5 +55,9 @@ public class Booking {//todo refacto
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date endDateHouse2;
 
+    private boolean hasUser1Accepted = false;
+
+    private boolean hasUser2Accepted = false;
+
 
 }

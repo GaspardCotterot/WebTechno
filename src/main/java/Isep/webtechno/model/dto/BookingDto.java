@@ -28,5 +28,7 @@ public class BookingDto {
     private Date startDateHouse2;
     private Date endDateHouse2;
 
+    private boolean hasUser1Accepted = false;
+    private boolean hasUser2Accepted = false;
 
 }
