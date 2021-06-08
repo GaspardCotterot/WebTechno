@@ -21,8 +21,8 @@ public class BookingService {
     }
 
     public List<Booking> getAllBookingsFromHouse(House house) {
-        List<Booking> bookingsAsUser1 = bookingRepository.findAllByUser1(house.getOwner());
-        List<Booking> bookingsAsUser2 = bookingRepository.findAllByUser2(house.getOwner());
+        List<Booking> bookingsAsUser1 = bookingRepository.findAllByHouseWantedByUser1(house);
+        List<Booking> bookingsAsUser2 = bookingRepository.findAllByHouseWantedByUser2(house);
 
         List<Booking> allBookings = new ArrayList<>();
         allBookings.addAll(bookingsAsUser1);
