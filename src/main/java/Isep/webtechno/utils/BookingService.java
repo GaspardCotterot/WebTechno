@@ -7,9 +7,13 @@ import Isep.webtechno.model.repo.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static Isep.webtechno.utils.BrowserService.isDateAfter;
 
 @Service
 public class BookingService {
@@ -29,7 +33,8 @@ public class BookingService {
         allBookings.addAll(bookingsAsUser2);
         allBookings = allBookings
                 .stream()
-                .filter(booking -> booking.getState() == BookingState.ACCEPTED)
+                .filter(booking -> (booking.getState() == BookingState.ACCEPTED
+                        && isDateAfter(booking.getStartDateHouse1().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now())))
                 .collect(Collectors.toList());
         return allBookings;
     }
