@@ -1,6 +1,7 @@
 package Isep.webtechno.model.entity;
 
 import Isep.webtechno.security.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.istack.NotNull;
 import lombok.Data;
@@ -44,6 +45,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<House> houses;
 
+    @JsonIgnore
+    @ManyToMany(mappedBy = "users")
+    private List<Conversation> conversations;
 
     //UserDetails methods
     @Override

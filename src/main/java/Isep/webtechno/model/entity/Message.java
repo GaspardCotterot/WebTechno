@@ -20,6 +20,9 @@ public class Message {
     @ManyToOne
     private User userReceiving;
 
+    @ManyToOne
+    Conversation conversation;
+
     private String text;
 
     private Date date;

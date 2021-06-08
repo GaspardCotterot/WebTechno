@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path="/message")
-public class MessageController {
+public class MessageAndConversationController {
 
     @Autowired
     private MessageRepository messageRepository;
