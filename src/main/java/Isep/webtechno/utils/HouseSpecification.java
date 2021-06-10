@@ -14,9 +14,11 @@ import java.util.List;
 public class HouseSpecification implements Specification<House> {
 
     private final HouseSearch criteria;
+//    private final BookingRepository bookingRepository;
 
     public HouseSpecification(HouseSearch criteria) {
         this.criteria = criteria;
+//        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -33,6 +35,10 @@ public class HouseSpecification implements Specification<House> {
             }
             predicates.add(criteriaBuilder.or(locationPredicates.toArray(new Predicate[locationPredicates.size()])));
         }
+        // TODO: check if house is not booked
+//        if (criteria.getArrival() != null && criteria.getDeparture() != null) {
+//            BookingService bookingService = new BookingService(bookingRepository);
+//        }
         return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
     }
 }
