@@ -1,12 +1,14 @@
 package Isep.webtechno.model.converter;
 
 import Isep.webtechno.model.dto.ConversationDto;
+import Isep.webtechno.model.dto.MessageDto;
 import Isep.webtechno.model.entity.Conversation;
 import Isep.webtechno.model.entity.User;
 import Isep.webtechno.utils.ConversationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,9 @@ public class ConversationConverter {
     }
 
     public List<ConversationDto> toDto(List<Conversation> conversations, User user) {
-        return conversations.stream().map(conversation -> this.toDto(conversation, user)).collect(Collectors.toList());
+        return conversations.stream()
+                .map(conversation -> this.toDto(conversation, user))
+                .sorted((o1, o2) -> -o1.getLastConsultedAt().compareTo(o2.getLastConsultedAt()))
+                .collect(Collectors.toList());
     }
 }

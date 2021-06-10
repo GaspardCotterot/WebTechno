@@ -58,15 +58,16 @@ public class MessageAndConversationController {
 
         if (userContext.getId().equals(userId))
             return new ResponseEntity<>("You can't have a conversation with yourself", HttpStatus.BAD_REQUEST);
-        Conversation alreadyExistedConversation = userContext.getConversations().stream()
+        List<Conversation> alreadyExistedConversations = userContext.getConversations().stream()
                 .filter(conversation -> conversation.getUsers().contains(user))
-                .collect(Collectors.toList()).get(0);
-        if (alreadyExistedConversation != null) {
-            return new ResponseEntity<>(""+alreadyExistedConversation.getId(), HttpStatus.OK);
+                .collect(Collectors.toList());
+        if (alreadyExistedConversations.size() > 0) {
+            return new ResponseEntity<>(""+alreadyExistedConversations.get(0).getId(), HttpStatus.OK);
         }
 
         Conversation conversation = new Conversation();
         conversation.setUsers(List.of(userContext, user));
+        conversation.setLastUpdatedAt(new Date());
         conversationRepository.save(conversation);
 
         return new ResponseEntity<>("" + conversation.getId(), HttpStatus.OK);
@@ -86,6 +87,9 @@ public class MessageAndConversationController {
         message.setUserSending(userContext);
 
         messageRepository.save(message);
+
+        conversation.setLastUpdatedAt(new Date());
+        conversationRepository.save(conversation);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
