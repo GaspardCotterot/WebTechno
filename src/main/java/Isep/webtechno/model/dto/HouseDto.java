@@ -18,4 +18,5 @@ public class HouseDto {
     private List<HouseConstraint> constraints;
     private List<HouseService> services;
     private Integer ownerId;
+    private List<PictureDto> pictures;
 }

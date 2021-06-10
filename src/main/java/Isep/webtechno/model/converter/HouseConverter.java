@@ -4,6 +4,7 @@ import Isep.webtechno.model.dto.HouseBasicDto;
 import Isep.webtechno.model.dto.HouseDto;
 import Isep.webtechno.model.entity.House;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,6 +12,13 @@ import java.util.stream.Collectors;
 
 @Component
 public class HouseConverter {
+    private final PictureConverter pictureConverter;
+
+    @Autowired
+    public HouseConverter(PictureConverter pictureConverter) {
+        this.pictureConverter = pictureConverter;
+    }
+
     ModelMapper modelMapper = new ModelMapper();
 
     public HouseBasicDto toBasicDto(House house) {
@@ -37,6 +45,7 @@ public class HouseConverter {
         houseDto.setPostalCode(house.getPostalCode());
         houseDto.setDescription(house.getDescription());
         houseDto.setOwnerId(house.getOwner().getId());
+        houseDto.setPictures(pictureConverter.toDto(house.getPictures()));
 
         return houseDto;
     }
