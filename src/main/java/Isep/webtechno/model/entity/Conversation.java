@@ -22,8 +22,7 @@ public class Conversation {
     @OneToMany(mappedBy = "conversation")
     List<Message> messages;
 
-    Date user1lastConsultedAt;
-    Date user2lastConsultedAt;
+    Date lastUpdatedAt;
 
 
 }

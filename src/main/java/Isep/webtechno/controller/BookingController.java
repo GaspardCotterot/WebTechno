@@ -4,7 +4,7 @@ package Isep.webtechno.controller;
 import Isep.webtechno.model.converter.BookingConverter;
 import Isep.webtechno.model.converter.HouseConverter;
 import Isep.webtechno.model.dto.BookingDto;
-import Isep.webtechno.model.dto.HouseDto;
+import Isep.webtechno.model.dto.HouseBasicDto;
 import Isep.webtechno.model.entity.Booking;
 import Isep.webtechno.model.entity.BookingState;
 import Isep.webtechno.model.entity.House;
@@ -111,7 +111,7 @@ public class BookingController {
     }
 
     @GetMapping(path = "/get-others-houses/{bookingId}")
-    private ResponseEntity<List<HouseDto>> getOthersHouses(@PathVariable Integer bookingId) {
+    private ResponseEntity<List<HouseBasicDto>> getOthersHouses(@PathVariable Integer bookingId) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
         if (!booking.getUser1().equals(userFromContext) && !booking.getUser2().equals(userFromContext))
@@ -123,7 +123,7 @@ public class BookingController {
         } else {
             houses = booking.getUser1().getHouses();
         }
-        return new ResponseEntity<>(houseConverter.toDto(houses), HttpStatus.OK);
+        return new ResponseEntity<>(houseConverter.toBasicDto(houses), HttpStatus.OK);
     }
 
     @PostMapping(path = "/{bookingId}")

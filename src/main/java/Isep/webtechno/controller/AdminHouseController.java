@@ -2,7 +2,6 @@ package Isep.webtechno.controller;
 
 
 import Isep.webtechno.model.converter.HouseConverter;
-import Isep.webtechno.model.dto.HouseDto;
 import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.User;
 import Isep.webtechno.model.repo.HouseRepository;
@@ -10,13 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path="/admin/house")

@@ -30,7 +30,7 @@ public class ConversationConverter {
         User otherUser = conversationService.getOtherUser(conversation, user);
 
         conversationDto.setUser(userConverter.toBasicDto(otherUser));
-        conversationDto.setConsultedAt(conversation.getUsers().get(0).equals(user) ? conversation.getUser2lastConsultedAt() : conversation.getUser1lastConsultedAt());
+        conversationDto.setLastConsultedAt(conversation.getLastUpdatedAt());
 
         return conversationDto;
     }

@@ -1,8 +1,6 @@
 package Isep.webtechno.model.dto;
 
 import Isep.webtechno.model.entity.BookingState;
-import Isep.webtechno.model.entity.House;
-import Isep.webtechno.model.entity.User;
 import lombok.Data;
 
 import java.util.Date;
@@ -18,9 +16,9 @@ public class BookingDto {
 
     private BasicUserDto user2;
 
-    private HouseDto houseWantedByUser1;
+    private HouseBasicDto houseWantedByUser1;
 
-    private HouseDto houseWantedByUser2;
+    private HouseBasicDto houseWantedByUser2;
 
 
     private Date startDateHouse1;

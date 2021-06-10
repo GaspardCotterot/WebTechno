@@ -1,6 +1,8 @@
 package Isep.webtechno.controller;
 
 
+import Isep.webtechno.model.converter.HouseConverter;
+import Isep.webtechno.model.dto.HouseDto;
 import Isep.webtechno.model.entity.House;
 import Isep.webtechno.model.entity.HouseConstraint;
 import Isep.webtechno.model.entity.HouseService;
@@ -12,7 +14,6 @@ import Isep.webtechno.model.repo.UserRepository;
 import Isep.webtechno.utils.GeneralService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,28 +22,34 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="/house")
+@RequestMapping(path = "/house")
 public class HouseController {
 
-    @Autowired
-    private HouseRepository houseRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private HouseConstraintRepository houseConstraintRepository;
-    @Autowired
-    private HouseServiceRepository houseServiceRepository;
-    @Autowired
-    private GeneralService generalService;
 
-    @GetMapping(path = "/{house_id}")
-    public ResponseEntity<House> getHouseById(@PathVariable int house_id){
-        House house = houseRepository.findById(house_id).orElseThrow(() -> new EntityNotFoundException("No book with id " + house_id));
-        return new ResponseEntity<>(house, HttpStatus.OK);
+    private final HouseRepository houseRepository;
+    private final UserRepository userRepository;
+    private final HouseConstraintRepository houseConstraintRepository;
+    private final HouseServiceRepository houseServiceRepository;
+    private final GeneralService generalService;
+    private final HouseConverter houseConverter;
+
+    public HouseController(HouseRepository houseRepository, UserRepository userRepository, HouseConstraintRepository houseConstraintRepository, HouseServiceRepository houseServiceRepository, GeneralService generalService, HouseConverter houseConverter) {
+        this.houseRepository = houseRepository;
+        this.userRepository = userRepository;
+        this.houseConstraintRepository = houseConstraintRepository;
+        this.houseServiceRepository = houseServiceRepository;
+        this.generalService = generalService;
+        this.houseConverter = houseConverter;
     }
 
-    @PostMapping(path="/add")
-    public String addNewHouse (@RequestParam String title, @RequestParam String description) {
+    @GetMapping(path = "/{house_id}")
+    public ResponseEntity<HouseDto> getHouseById(@PathVariable int house_id) {
+        House house = houseRepository.findById(house_id).orElseThrow(() -> new EntityNotFoundException("No book with id " + house_id));
+        return new ResponseEntity<>(houseConverter.toDto(house), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/add")
+    public String addNewHouse(@RequestParam String title, @RequestParam String description) {
         User user = generalService.getUserFromContext();
         House house = new House();
         house.setTitle(title);
@@ -71,18 +78,18 @@ public class HouseController {
         List<HouseService> houseServices = generalService.getObjectListFromJsonString(services, HouseService.class);
 
         House house = houseRepository.findById(houseId).orElseThrow(() -> new EntityNotFoundException("No book with id " + houseId));
-        if(!user.getHouses().contains(house)) {
+        if (!user.getHouses().contains(house)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        if(title != null && !title.equals("")) house.setTitle(title);
-        if(description != null) house.setDescription(description);
-        if(city != null) house.setCity(city);
-        if(country != null) house.setCountry(country);
-        if(address != null) house.setAddress(address);
-        if(postalCode != null) house.setPostalCode(postalCode);
-        if(houseConstraints.size() != 0 ) house.setConstraints(houseConstraints);
-        if(houseServices.size() != 0 ) house.setServices(houseServices);
+        if (title != null && !title.equals("")) house.setTitle(title);
+        if (description != null) house.setDescription(description);
+        if (city != null) house.setCity(city);
+        if (country != null) house.setCountry(country);
+        if (address != null) house.setAddress(address);
+        if (postalCode != null) house.setPostalCode(postalCode);
+        if (houseConstraints.size() != 0) house.setConstraints(houseConstraints);
+        if (houseServices.size() != 0) house.setServices(houseServices);
 
         houseRepository.save(house);
 

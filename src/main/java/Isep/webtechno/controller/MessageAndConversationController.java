@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/message")
@@ -57,26 +58,26 @@ public class MessageAndConversationController {
 
         if (userContext.getId().equals(userId))
             return new ResponseEntity<>("You can't have a conversation with yourself", HttpStatus.BAD_REQUEST);
-        if (userContext.getConversations().stream().anyMatch(
-                conversation -> conversation.getUsers().contains(user)
-        )) {
-            return new ResponseEntity<>("A conversation with this user already exists", HttpStatus.BAD_REQUEST);
+        Conversation alreadyExistedConversation = userContext.getConversations().stream()
+                .filter(conversation -> conversation.getUsers().contains(user))
+                .collect(Collectors.toList()).get(0);
+        if (alreadyExistedConversation != null) {
+            return new ResponseEntity<>(""+alreadyExistedConversation.getId(), HttpStatus.OK);
         }
 
         Conversation conversation = new Conversation();
         conversation.setUsers(List.of(userContext, user));
-        conversation.setUser1lastConsultedAt(new Date());
-        conversation.setUser2lastConsultedAt(new Date());
         conversationRepository.save(conversation);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("" + conversation.getId(), HttpStatus.OK);
     }
 
     @PostMapping(path = "/new-message/{conversationId}")
     private ResponseEntity<String> addMessage(@PathVariable Integer conversationId, @RequestParam String text) {
         User userContext = generalService.getUserFromContext();
         Conversation conversation = conversationRepository.findById(conversationId).orElseThrow(() -> new EntityNotFoundException("No conversation with this id"));
-        if(!conversation.getUsers().contains(userContext)) return new ResponseEntity<>("This is not your conversation", HttpStatus.FORBIDDEN);
+        if (!conversation.getUsers().contains(userContext))
+            return new ResponseEntity<>("This is not your conversation", HttpStatus.FORBIDDEN);
 
         Message message = new Message();
         message.setConversation(conversation);
@@ -93,7 +94,7 @@ public class MessageAndConversationController {
     private ResponseEntity<List<MessageDto>> getMessages(@PathVariable Integer conversationId) {
         User userContext = generalService.getUserFromContext();
         Conversation conversation = conversationRepository.findById(conversationId).orElseThrow(() -> new EntityNotFoundException("No conversation with this id"));
-        if(!conversation.getUsers().contains(userContext)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (!conversation.getUsers().contains(userContext)) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         List<Message> messages = conversation.getMessages();
 

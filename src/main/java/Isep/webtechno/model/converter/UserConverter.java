@@ -25,7 +25,7 @@ public class UserConverter {
         BasicUserDto userDto = new BasicUserDto();
         userDto.setMail(user.getMail());
         userDto.setName(user.getName());
-        userDto.setHouses(houseConverter.toDto(user.getHouses()));
+        userDto.setHouses(houseConverter.toBasicDto(user.getHouses()));
         userDto.setRole(user.getRole());
         return userDto;
     }

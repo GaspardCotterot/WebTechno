@@ -11,5 +11,5 @@ public class ConversationDto {
     private Integer id;
     BasicUserDto user;
     List<Message> messages;
-    Date consultedAt;
+    Date lastConsultedAt;
 }
