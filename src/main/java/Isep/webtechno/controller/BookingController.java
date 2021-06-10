@@ -2,7 +2,9 @@ package Isep.webtechno.controller;
 
 
 import Isep.webtechno.model.converter.BookingConverter;
+import Isep.webtechno.model.converter.HouseConverter;
 import Isep.webtechno.model.dto.BookingDto;
+import Isep.webtechno.model.dto.HouseDto;
 import Isep.webtechno.model.entity.Booking;
 import Isep.webtechno.model.entity.BookingState;
 import Isep.webtechno.model.entity.House;
@@ -11,12 +13,10 @@ import Isep.webtechno.model.repo.BookingRepository;
 import Isep.webtechno.model.repo.HouseRepository;
 import Isep.webtechno.utils.GeneralService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +32,8 @@ public class BookingController {
     @Autowired
     HouseRepository houseRepository;
     @Autowired
+    HouseConverter houseConverter;
+    @Autowired
     BookingConverter bookingConverter;
 
     @GetMapping
@@ -39,7 +41,6 @@ public class BookingController {
         User userFromContext = generalService.getUserFromContext();
         List<Booking> allBookings = bookingRepository.findAllByUser1(userFromContext);
         allBookings = allBookings.stream().filter(booking -> booking.getState() != BookingState.ARCHIVED).collect(Collectors.toList());
-        allBookings.forEach(booking -> System.out.println("aff " + booking.getId()));
         return new ResponseEntity<>(bookingConverter.toDto(allBookings), HttpStatus.OK);
     }
 
@@ -97,7 +98,7 @@ public class BookingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping(path = "/change-sent-booking-state/{bookingId}")
+    @PostMapping(path = "/change-sent-booking-state/{bookingId}")//todo simplify
     private ResponseEntity<String> changeSentBookingState(@PathVariable int bookingId, @RequestParam BookingState bookingState) {
         User userFromContext = generalService.getUserFromContext();
         Booking booking = bookingRepository.findById(bookingId).orElseThrow();
@@ -109,4 +110,84 @@ public class BookingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping(path = "/get-others-houses/{bookingId}")
+    private ResponseEntity<List<HouseDto>> getOthersHouses(@PathVariable Integer bookingId) {
+        User userFromContext = generalService.getUserFromContext();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        if (!booking.getUser1().equals(userFromContext) && !booking.getUser2().equals(userFromContext))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        List<House> houses;
+        if (booking.getUser1().equals(userFromContext)) {
+            houses = booking.getUser2().getHouses();
+        } else {
+            houses = booking.getUser1().getHouses();
+        }
+        return new ResponseEntity<>(houseConverter.toDto(houses), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/{bookingId}")
+    private ResponseEntity<String> editBooking(@PathVariable Integer bookingId,
+                                               @RequestParam(required = false) Date startDate,
+                                               @RequestParam(required = false) Date endDate,
+                                               @RequestParam(required = false) Integer houseId) {
+
+        User userFromContext = generalService.getUserFromContext();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        if (!booking.getUser1().equals(userFromContext) && !booking.getUser2().equals(userFromContext))
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+
+        if (booking.getUser1().equals(userFromContext)) {
+            booking.setStartDateHouse1(startDate);
+            booking.setEndDateHouse1(endDate);
+            if (houseId != null) {
+                House house = houseRepository.findById(houseId).orElseThrow();
+                booking.setHouseWantedByUser1(house);
+            }
+            booking.setHasUser2Accepted(false);
+        } else {
+            booking.setStartDateHouse2(startDate);
+            booking.setEndDateHouse2(endDate);
+            if (houseId != null) {
+                House house = houseRepository.findById(houseId).orElseThrow();
+                booking.setHouseWantedByUser2(house);
+            }
+            booking.setHasUser1Accepted(false);
+        }
+
+        bookingRepository.save(booking);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "{bookingId}")
+    private ResponseEntity<String> acceptBooking(@PathVariable Integer bookingId) {
+        User userFromContext = generalService.getUserFromContext();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+
+        if (!booking.getStartDateHouse1().equals(booking.getStartDateHouse2()))
+            return new ResponseEntity<>("Starting dates does not match", HttpStatus.BAD_REQUEST);
+        if (!booking.getEndDateHouse1().equals(booking.getEndDateHouse2()))
+            return new ResponseEntity<>("Ending dates does not match", HttpStatus.BAD_REQUEST);
+
+        if (booking.getUser1().equals(userFromContext)) {
+            if (booking.getHouseWantedByUser2() == null)
+                return new ResponseEntity<>("No house selected", HttpStatus.BAD_REQUEST);
+            booking.setHasUser1Accepted(true);
+        } else if (booking.getUser2().equals(userFromContext)) {
+            if (booking.getHouseWantedByUser1() == null)
+                return new ResponseEntity<>("No house selected", HttpStatus.BAD_REQUEST);
+            booking.setHasUser2Accepted(true);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        if (booking.isHasUser1Accepted() && booking.isHasUser2Accepted()) {
+            booking.setState(BookingState.ACCEPTED);
+        }
+
+        bookingRepository.save(booking);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

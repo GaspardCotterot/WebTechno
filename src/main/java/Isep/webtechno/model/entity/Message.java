@@ -1,6 +1,7 @@
 package Isep.webtechno.model.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,8 +18,12 @@ public class Message {
     @ManyToOne
     private User userSending;
 
+//    @ManyToOne
+//    private User userReceiving;
+
+    @JsonIgnore
     @ManyToOne
-    private User userReceiving;
+    Conversation conversation;
 
     private String text;
 
