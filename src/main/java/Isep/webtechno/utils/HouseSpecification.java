@@ -14,9 +14,11 @@ import java.util.List;
 public class HouseSpecification implements Specification<House> {
 
     private final HouseSearch criteria;
+//    private final BookingRepository bookingRepository;
 
     public HouseSpecification(HouseSearch criteria) {
         this.criteria = criteria;
+//        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class HouseSpecification implements Specification<House> {
         }
         // TODO: check if house is not booked
 //        if (criteria.getArrival() != null && criteria.getDeparture() != null) {
-//            predicates.add(criteriaBuilder);
+//            BookingService bookingService = new BookingService(bookingRepository);
 //        }
         return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
     }

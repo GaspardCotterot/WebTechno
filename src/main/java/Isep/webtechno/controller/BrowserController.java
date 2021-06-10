@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static Isep.webtechno.utils.BrowserService.*;
@@ -23,7 +22,6 @@ public class BrowserController {
 
     @PostMapping(path = "/search")
     public List<House> findByLocation(@ModelAttribute HouseSearch search) {
-        System.out.println(search.getLocation()+" "+search.getArrival()+" "+search.getDeparture());
         if (checkDatePattern(search.getArrival()) && checkDatePattern(search.getDeparture())) {
             if (isDateAfter(stringToLocalDate(search.getArrival()), LocalDate.now())
                     && isDateAfter(stringToLocalDate(search.getDeparture()), LocalDate.now())
